@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz RPG</title>
+</head>
+<body>
+    <h1>Quiz Time!</h1>
+
+    <p><strong>Player:</strong> {{ character.name }}</p>
+    <p><strong>Class:</strong> {{ character.get_character_class_display }}</p>
+    <p><strong>Level:</strong> {{ character.level }}</p>
+    <p><strong>XP:</strong> {{ character.experience }} / {{ character.level|add:"0" }}00</p>
+
+    {% if feedback %}
+        <p><strong>{{ feedback|safe }}</strong></p>
+    {% endif %}
+
+    <p><strong>{{ question.text }}</strong></p>
+    <form method="post">
+        {% csrf_token %}
+        {% for answer in question.answers.all %}
+            <label>
+                <input type="radio" name="answer" value="{{ answer.id }}">
+                {{ answer.text }}
+            </label><br>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
