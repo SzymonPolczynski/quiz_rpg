@@ -10,6 +10,8 @@
     <p><strong>Class:</strong> {{ character.get_character_class_display }}</p>
     <p><strong>Level:</strong> {{ character.level }}</p>
     <p><strong>XP:</strong> {{ character.experience }} / {{ character.level|add:"0" }}00</p>
+    <p><a href="{% url 'profile' %}">View Profile</a></p>
+
 
     {% if feedback %}
         <p><strong>{{ feedback|safe }}</strong></p>
