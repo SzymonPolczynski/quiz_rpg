@@ -2,7 +2,7 @@ import random
 from django.shortcuts import render, redirect
 from .models import Character, Question, Answer
 from django.contrib.auth.decorators import login_required
-from .forms import CharasterClassForm
+from .forms import CharasterClassForm, StatAllocationForm
 
 
 @login_required
@@ -43,13 +43,20 @@ def quiz_view(request):
         if selected_answer_id:
             answer = Answer.objects.get(id=selected_answer_id)
             if answer.is_correct:
-                gained_xp = character.get_xp_reward()
-                feedback = f"Correct! +{gained_xp} experience points awarded. <br>"
-                character.experience += gained_xp
+                reward = character.get_xp_reward()
+                feedback = f"Correct! <br>"
+                feedback += f"Strength Bonus: {reward['strength_bonus']} <br>"
+                feedback += f"Intelligence Bonus: {reward['intelligence_bonus']} <br>"
+                if reward["double"]:
+                    feedback += "Lucky! You received double XP! <br>"
+                feedback += f"Total XP: {reward['total']} <br>"
+                character.experience += reward["total"]
                 if character.experience >= character.level * 100:
                     character.level += 1
                     character.experience = 0
-                    feedback += f" Level up! You are now level {character.level}."
+                    character.stat_points += 5
+                    feedback += f" Level up! You are now level {character.level}. <br>"
+                    feedback += f" You have {character.stat_points} stat points to distribute. <br>"
                 character.save()
             else:
                 feedback = "Wrong answer."
@@ -73,3 +80,47 @@ def profile_view(request):
         "game/profile.html",
         {"character": character, "xp_progress": xp_progress},
     )
+
+
+@login_required
+def allocate_stats_view(request):
+    character = Character.objects.get(user=request.user)
+
+    if request.method == "POST":
+        form = StatAllocationForm(request.POST)
+        if form.is_valid():
+            new_values = form.cleaned_data
+
+            before = {
+                "strength": character.strength,
+                "intelligence": character.intelligence,
+                "agility": character.agility,
+                "luck": character.luck,
+            }
+
+            total_used = sum(
+                max(0, new_values[k] - before[k]) for k in before
+            )
+
+            if total_used > character.stat_points:
+                form.add_error(None, "You do not have enough stat points.")
+            else:
+                character.strength = new_values["strength"]
+                character.intelligence = new_values["intelligence"]
+                character.agility = new_values["agility"]
+                character.luck = new_values["luck"]
+                character.stat_points -= total_used
+                character.save()
+                return redirect("profile")
+    else:
+        form = StatAllocationForm(initial={
+            "strength": character.strength,
+            "intelligence": character.intelligence,
+            "agility": character.agility,
+            "luck": character.luck,
+        })
+    
+    return render(request, "game/allocate_stats.html", {
+        "form": form,
+        "character": character,
+    })

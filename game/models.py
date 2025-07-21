@@ -1,5 +1,7 @@
+import random
 from django.db import models
 from django.contrib.auth.models import User
+from typing import TypedDict
 
 
 class Character(models.Model):
@@ -14,8 +16,7 @@ class Character(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     character_class = models.CharField(
-        max_length=20, choices=CLASS_CHOICES, blank=True, null=True
-    )
+        max_length=20, choices=CLASS_CHOICES, default="warrior")
     level = models.IntegerField(default=1)
     experience = models.IntegerField(default=0)
 
@@ -24,14 +25,41 @@ class Character(models.Model):
     agility = models.IntegerField(default=5)
     luck = models.IntegerField(default=5)
 
-    def get_xp_reward(self) -> int:
-        if self.character_class == "warrior":
-            return 10
-        elif self.character_class == "mage":
-            return 15
-        elif self.character_class == "rogue":
-            return 12
-        return 10
+    stat_points = models.IntegerField(default=0)
+    
+    class XpReward(TypedDict):
+        total: int
+        base: int
+        strength_bonus: int
+        intelligence_bonus: int
+        double: bool
+
+
+    def get_xp_reward(self) -> XpReward:
+        base_xp = {
+            "warrior": 10,
+            "mage": 15,
+            "rogue": 12
+        }.get(self.character_class, 10)
+
+        strength_bonus = int(base_xp * (self.strength / 100))
+
+        intelligence_bonus = int(self.intelligence * 1)
+
+        luck_chance = self.luck * 5
+        double_reward = random.randint(1, 100) <= luck_chance
+
+        total = base_xp + strength_bonus + intelligence_bonus
+        if double_reward:
+            total *= 2
+
+        return {
+            "total": total,
+            "base": base_xp,
+            "strength_bonus": strength_bonus,
+            "intelligence_bonus": intelligence_bonus,
+            "double": double_reward,
+        }
 
     def __str__(self):
         return f"{self.name} (Level {self.level}, Class: {self.character_class})"

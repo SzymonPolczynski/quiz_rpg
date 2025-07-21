@@ -40,6 +40,10 @@
             {{ xp_progress }}%
         </div>
     </div>
+    
+    {% if character.stat_points > 0 %}
+    <p><a href="{% url 'allocate_stats' %}">➕ Allocate {{ character.stat_points }} stat points</a></p>
+    {% endif %}
 
     <p><a href="{% url 'quiz' %}">🔁 Back to Quiz</a></p>
 </body>
