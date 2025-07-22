@@ -11,4 +11,11 @@ urlpatterns = [
     path("use_item/<int:item_id>/", views.use_item_view, name="use_item"),
     path("equip_item/<int:item_id>/", views.equip_item_view, name="equip_item"),
     path("unequip_item/<str:slot>/", views.unequip_item_view, name="unequip_item"),
+    path("quiz/choose_category/", views.choose_category_view, name="choose_category"),
+    path(
+        "quiz/set_category/<int:category_id>/",
+        views.set_category_view,
+        name="set_category",
+    ),
+    path("quiz/clear_category/", views.clear_category_view, name="clear_category"),
 ]

@@ -5,6 +5,13 @@
 </head>
 <body>
     <h1>Quiz Time!</h1>
+    {% if question.category %}
+        <p>Category: <strong>{{ question.category.name }}</strong></p>
+    {% endif %}
+
+    <p>
+        <a href="{% url 'clear_category' %}">🔄 Change category</a>
+    </p>
 
     <p><strong>Player:</strong> {{ character.name }}</p>
     <p><strong>Class:</strong> {{ character.get_character_class_display }}</p>

@@ -1,6 +1,6 @@
 import random
 from django.shortcuts import render, redirect
-from .models import Character, Question, Answer, Item
+from .models import Character, Question, Answer, Item, Category
 from django.contrib.auth.decorators import login_required
 from .forms import CharasterClassForm, StatAllocationForm
 
@@ -32,11 +32,20 @@ def quiz_view(request):
         defaults={"name": request.user.username},
     )
 
+    category_id = request.session.get("selected_category")
+    questions = Question.objects.all()
+
+    if category_id:
+        questions = questions.filter(category_id=category_id)
+
+    if not questions.exists():
+        return render(request, "game/no_questions.html", {"category_id": category_id})
+
     if not character.character_class:
         return redirect("choose_class")
 
     feedback = request.session.pop("feedback", None)
-    question = random.choice(Question.objects.all())
+    question = random.choice(questions)
 
     if request.method == "POST":
         selected_answer_id = request.POST.get("answer")
@@ -87,16 +96,22 @@ def profile_view(request):
     equipped_items = []
     for slot, label in SLOTS:
         item = getattr(character, f"equipped_{slot}")
-        equipped_items.append({
-            "slot": slot,
-            "label": label,
-            "item": item,
-        })
+        equipped_items.append(
+            {
+                "slot": slot,
+                "label": label,
+                "item": item,
+            }
+        )
 
     return render(
         request,
         "game/profile.html",
-        {"character": character, "xp_progress": xp_progress, "equipped_items": equipped_items},
+        {
+            "character": character,
+            "xp_progress": xp_progress,
+            "equipped_items": equipped_items,
+        },
     )
 
 
@@ -116,9 +131,7 @@ def allocate_stats_view(request):
                 "luck": character.luck,
             }
 
-            total_used = sum(
-                max(0, new_values[k] - before[k]) for k in before
-            )
+            total_used = sum(max(0, new_values[k] - before[k]) for k in before)
 
             if total_used > character.stat_points:
                 form.add_error(None, "You do not have enough stat points.")
@@ -131,17 +144,23 @@ def allocate_stats_view(request):
                 character.save()
                 return redirect("profile")
     else:
-        form = StatAllocationForm(initial={
-            "strength": character.strength,
-            "intelligence": character.intelligence,
-            "agility": character.agility,
-            "luck": character.luck,
-        })
-    
-    return render(request, "game/allocate_stats.html", {
-        "form": form,
-        "character": character,
-    })
+        form = StatAllocationForm(
+            initial={
+                "strength": character.strength,
+                "intelligence": character.intelligence,
+                "agility": character.agility,
+                "luck": character.luck,
+            }
+        )
+
+    return render(
+        request,
+        "game/allocate_stats.html",
+        {
+            "form": form,
+            "character": character,
+        },
+    )
 
 
 @login_required
@@ -149,10 +168,14 @@ def inventory_view(request):
     character = Character.objects.get(user=request.user)
     items = character.items.all()
 
-    return render(request, "game/inventory.html", {
-        "items": items,
-        "character": character,        
-    })
+    return render(
+        request,
+        "game/inventory.html",
+        {
+            "items": items,
+            "character": character,
+        },
+    )
 
 
 @login_required
@@ -164,7 +187,7 @@ def use_item_view(request, item_id):
     character.intelligence += item.effect_intelligence
     character.agility += item.effect_agility
     character.luck += item.effect_luck
-    
+
     character.items.remove(item)
     character.save()
 
@@ -206,3 +229,21 @@ def unequip_item_view(request, slot):
         pass  # Handle case where slot does not exist
 
     return redirect("profile")
+
+
+@login_required
+def choose_category_view(request):
+    categories = Category.objects.all()
+    return render(request, "game/choose_category.html", {"categories": categories})
+
+
+@login_required
+def set_category_view(request, category_id):
+    request.session["selected_category"] = category_id
+    return redirect("quiz")
+
+
+@login_required
+def clear_category_view(request):
+    request.session.pop("selected_category", None)
+    return redirect("choose_category")

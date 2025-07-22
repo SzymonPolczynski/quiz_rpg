@@ -16,18 +16,55 @@ class Character(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     character_class = models.CharField(
-        max_length=20, choices=CLASS_CHOICES, default="warrior")
+        max_length=20, choices=CLASS_CHOICES, default="warrior"
+    )
     level = models.IntegerField(default=1)
     experience = models.IntegerField(default=0)
 
     items = models.ManyToManyField("Item", related_name="characters", blank=True)
 
-    equipped_head = models.ForeignKey("Item", null=True, blank=True, related_name="equipped_on_head", on_delete=models.SET_NULL)
-    equipped_body = models.ForeignKey("Item", null=True, blank=True, related_name="equipped_on_body", on_delete=models.SET_NULL)
-    equipped_legs = models.ForeignKey("Item", null=True, blank=True, related_name="equipped_on_legs", on_delete=models.SET_NULL)
-    equipped_feet = models.ForeignKey("Item", null=True, blank=True, related_name="equipped_on_feet", on_delete=models.SET_NULL)
-    equipped_hand_right = models.ForeignKey("Item", null=True, blank=True, related_name="equipped_on_hand_right", on_delete=models.SET_NULL)
-    equipped_hand_left = models.ForeignKey("Item", null=True, blank=True, related_name="equipped_on_hand_left", on_delete=models.SET_NULL)
+    equipped_head = models.ForeignKey(
+        "Item",
+        null=True,
+        blank=True,
+        related_name="equipped_on_head",
+        on_delete=models.SET_NULL,
+    )
+    equipped_body = models.ForeignKey(
+        "Item",
+        null=True,
+        blank=True,
+        related_name="equipped_on_body",
+        on_delete=models.SET_NULL,
+    )
+    equipped_legs = models.ForeignKey(
+        "Item",
+        null=True,
+        blank=True,
+        related_name="equipped_on_legs",
+        on_delete=models.SET_NULL,
+    )
+    equipped_feet = models.ForeignKey(
+        "Item",
+        null=True,
+        blank=True,
+        related_name="equipped_on_feet",
+        on_delete=models.SET_NULL,
+    )
+    equipped_hand_right = models.ForeignKey(
+        "Item",
+        null=True,
+        blank=True,
+        related_name="equipped_on_hand_right",
+        on_delete=models.SET_NULL,
+    )
+    equipped_hand_left = models.ForeignKey(
+        "Item",
+        null=True,
+        blank=True,
+        related_name="equipped_on_hand_left",
+        on_delete=models.SET_NULL,
+    )
 
     strength = models.IntegerField(default=5)
     intelligence = models.IntegerField(default=5)
@@ -35,7 +72,7 @@ class Character(models.Model):
     luck = models.IntegerField(default=5)
 
     stat_points = models.IntegerField(default=0)
-    
+
     class XpReward(TypedDict):
         total: int
         base: int
@@ -43,13 +80,8 @@ class Character(models.Model):
         intelligence_bonus: int
         double: bool
 
-
     def get_xp_reward(self) -> XpReward:
-        base_xp = {
-            "warrior": 10,
-            "mage": 15,
-            "rogue": 12
-        }.get(self.character_class, 10)
+        base_xp = {"warrior": 10, "mage": 15, "rogue": 12}.get(self.character_class, 10)
 
         strength_bonus = int(base_xp * (self.strength / 100))
 
@@ -72,29 +104,38 @@ class Character(models.Model):
 
     @property
     def total_strength(self):
-        return self.strength + sum(item.effect_strength for item in self.get_eqquipped_items())
-    
+        return self.strength + sum(
+            item.effect_strength for item in self.get_eqquipped_items()
+        )
+
     @property
     def total_intelligence(self):
-        return self.intelligence + sum(item.effect_intelligence for item in self.get_eqquipped_items())
-    
+        return self.intelligence + sum(
+            item.effect_intelligence for item in self.get_eqquipped_items()
+        )
+
     @property
     def total_agility(self):
-        return self.agility + sum(item.effect_agility for item in self.get_eqquipped_items())
-    
+        return self.agility + sum(
+            item.effect_agility for item in self.get_eqquipped_items()
+        )
+
     @property
     def total_luck(self):
         return self.luck + sum(item.effect_luck for item in self.get_eqquipped_items())
-    
+
     def get_eqquipped_items(self):
-        return filter(None, [
-            self.equipped_head,
-            self.equipped_body,
-            self.equipped_legs,
-            self.equipped_feet,
-            self.equipped_hand_right,
-            self.equipped_hand_left
-        ])
+        return filter(
+            None,
+            [
+                self.equipped_head,
+                self.equipped_body,
+                self.equipped_legs,
+                self.equipped_feet,
+                self.equipped_hand_right,
+                self.equipped_hand_left,
+            ],
+        )
 
     def __str__(self):
         return f"{self.name} (Level {self.level}, Class: {self.character_class})"
@@ -139,7 +180,11 @@ class Item(models.Model):
 
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-    slot = models.CharField(max_length=20, choices=SLOT_CHOICES, default="hand_right",)
+    slot = models.CharField(
+        max_length=20,
+        choices=SLOT_CHOICES,
+        default="hand_right",
+    )
 
     effect_strength = models.IntegerField(default=0)
     effect_intelligence = models.IntegerField(default=0)
