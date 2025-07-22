@@ -35,6 +35,8 @@
         <li><strong>Luck:</strong> {{ character.luck }}</li>
     </ul>
 
+    <a href="{% url 'inventory' %}" class="button">🎒 Open Inventory</a>
+
     <div class="progress-bar-container">
         <div class="progress-bar-fill">
             {{ xp_progress }}%

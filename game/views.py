@@ -1,6 +1,6 @@
 import random
 from django.shortcuts import render, redirect
-from .models import Character, Question, Answer
+from .models import Character, Question, Answer, Item
 from django.contrib.auth.decorators import login_required
 from .forms import CharasterClassForm, StatAllocationForm
 
@@ -124,3 +124,30 @@ def allocate_stats_view(request):
         "form": form,
         "character": character,
     })
+
+
+@login_required
+def inventory_view(request):
+    character = Character.objects.get(user=request.user)
+    items = character.items.all()
+    
+    return render(request, "game/inventory.html", {
+        "items": items,
+        "character": character,        
+    })
+
+
+@login_required
+def use_item_view(request, item_id):
+    character = Character.objects.get(user=request.user)
+    item = Item.objects.get(id=item_id)
+
+    character.strength += item.effect_strength
+    character.intelligence += item.effect_intelligence
+    character.agility += item.effect_agility
+    character.luck += item.effect_luck
+    
+    character.items.remove(item)
+    character.save()
+
+    return redirect("inventory")

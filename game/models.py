@@ -19,6 +19,7 @@ class Character(models.Model):
         max_length=20, choices=CLASS_CHOICES, default="warrior")
     level = models.IntegerField(default=1)
     experience = models.IntegerField(default=0)
+    items = models.ManyToManyField("Item", related_name="characters", blank=True)
 
     strength = models.IntegerField(default=5)
     intelligence = models.IntegerField(default=5)
@@ -85,3 +86,18 @@ class Answer(models.Model):
 
     def __str__(self):
         return f"{self.text} ({'✔' if self.is_correct else '✖'})"
+
+
+class Item(models.Model):
+    """Model representing an item in the game."""
+
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    effect_strength = models.IntegerField(default=0)
+    effect_intelligence = models.IntegerField(default=0)
+    effect_agility = models.IntegerField(default=0)
+    effect_luck = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+    

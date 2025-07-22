@@ -7,4 +7,6 @@ urlpatterns = [
     path("choose_class/", views.choose_class_view, name="choose_class"),
     path("profile/", views.profile_view, name="profile"),
     path("profile/allocate/", views.allocate_stats_view, name="allocate_stats"),
+    path("inventory/", views.inventory_view, name="inventory"),
+    path("use_item/<int:item_id>/", views.use_item_view, name="use_item"),
 ]
