@@ -29,10 +29,25 @@
     <p><strong>XP:</strong> {{ character.experience }} / {{ character.level|add:"0" }}00</p>
     <h2>Stats</h2>
     <ul>
-        <li><strong>Strength:</strong> {{ character.strength }}</li>
-        <li><strong>Intelligence:</strong> {{ character.intelligence }}</li>
-        <li><strong>Agility:</strong> {{ character.agility }}</li>
-        <li><strong>Luck:</strong> {{ character.luck }}</li>
+        <li><strong>Strength:</strong> {{ character.total_strength }} (base: {{ character.strength }})</li>
+        <li><strong>Intelligence:</strong> {{ character.total_intelligence }} (base: {{ character.intelligence }})</li>
+        <li><strong>Agility:</strong> {{ character.total_agility }} (base: {{ character.agility }})</li>
+        <li><strong>Luck:</strong> {{ character.total_luck }} (base: {{ character.luck }})</li>
+    </ul>
+
+    <h3>Equipped Gear</h3>
+    <ul>
+    {% for slot in equipped_items %}
+        <li>
+        <strong>{{ slot.label }}:</strong>
+        {% if slot.item %}
+            {{ slot.item.name }}
+            <a href="{% url 'unequip_item' slot.slot %}">[Unequip]</a>
+        {% else %}
+            None
+        {% endif %}
+        </li>
+    {% endfor %}
     </ul>
 
     <a href="{% url 'inventory' %}" class="button">🎒 Open Inventory</a>

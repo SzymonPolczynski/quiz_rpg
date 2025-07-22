@@ -72,13 +72,31 @@ def quiz_view(request):
 
 @login_required
 def profile_view(request):
+    SLOTS = [
+        ("head", "Head"),
+        ("body", "Body"),
+        ("legs", "Legs"),
+        ("feet", "Feet"),
+        ("hand_right", "Right Hand"),
+        ("hand_left", "Left Hand"),
+    ]
+
     character = Character.objects.get(user=request.user)
     xp_max = character.level * 100
     xp_progress = int((character.experience / xp_max) * 100)
+    equipped_items = []
+    for slot, label in SLOTS:
+        item = getattr(character, f"equipped_{slot}")
+        equipped_items.append({
+            "slot": slot,
+            "label": label,
+            "item": item,
+        })
+
     return render(
         request,
         "game/profile.html",
-        {"character": character, "xp_progress": xp_progress},
+        {"character": character, "xp_progress": xp_progress, "equipped_items": equipped_items},
     )
 
 
@@ -130,7 +148,7 @@ def allocate_stats_view(request):
 def inventory_view(request):
     character = Character.objects.get(user=request.user)
     items = character.items.all()
-    
+
     return render(request, "game/inventory.html", {
         "items": items,
         "character": character,        
@@ -151,3 +169,40 @@ def use_item_view(request, item_id):
     character.save()
 
     return redirect("inventory")
+
+
+@login_required
+def equip_item_view(request, item_id):
+    character = Character.objects.get(user=request.user)
+    item = Item.objects.get(id=item_id)
+
+    # Check if the item can be equipped
+    slot = item.slot
+    current_equipped = getattr(character, f"equipped_{slot}")
+
+    # If there's already an item equipped in that slot, add it back to the inventory
+    # before equipping the new item
+    if current_equipped:
+        character.items.add(current_equipped)
+
+    setattr(character, f"equipped_{slot}", item)
+    character.items.remove(item)
+    character.save()
+
+    return redirect("profile")
+
+
+@login_required
+def unequip_item_view(request, slot):
+    character = Character.objects.get(user=request.user)
+
+    try:
+        equipeed_item = getattr(character, f"equipped_{slot}")
+        if equipeed_item:
+            character.items.add(equipeed_item)
+            setattr(character, f"equipped_{slot}", None)
+            character.save()
+    except AttributeError:
+        pass  # Handle case where slot does not exist
+
+    return redirect("profile")

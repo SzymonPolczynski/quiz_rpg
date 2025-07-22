@@ -1,18 +1,18 @@
-<h2>Inventory</h2>
-<p>Total items: {{ items|length }}</p>
+<h3>Inventory</h3>
 
 <ul>
   {% for item in items %}
     <li>
-      <strong>{{ item.name }}</strong>: {{ item.description }}<br>
-      <form method="post" action="{% url 'use_item' item.id %}">
+      {{ item.name }}
+      <form method="post" action="{% url 'equip_item' item.id %}">
         {% csrf_token %}
-        <button type="submit">Use</button>
+        <button type="submit">Equip</button>
       </form>
     </li>
   {% empty %}
-    <li>You have no items.</li>
+    <li>No items in inventory.</li>
   {% endfor %}
 </ul>
+
 
 <a href="{% url 'profile' %}" class="btn btn-secondary">⬅️ Return to Profile</a>

@@ -9,4 +9,6 @@ urlpatterns = [
     path("profile/allocate/", views.allocate_stats_view, name="allocate_stats"),
     path("inventory/", views.inventory_view, name="inventory"),
     path("use_item/<int:item_id>/", views.use_item_view, name="use_item"),
+    path("equip_item/<int:item_id>/", views.equip_item_view, name="equip_item"),
+    path("unequip_item/<str:slot>/", views.unequip_item_view, name="unequip_item"),
 ]
