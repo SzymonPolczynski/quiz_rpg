@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quest Log</title>
+</head>
+<body>
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<h1>📘 Quest Log</h1>
+
+<h2>🔄 Active Quests</h2>
+<ul>
+  {% for q in active_quests %}
+    <li>
+      <strong>{{ q.quest.name }}</strong><br>
+      {{ q.quest.description }}<br>
+      Progress: {{ q.correct_answers }} / {{ q.quest.goal }}<br>
+      Reward: {{ q.quest.experience_reward }} XP, {{ q.quest.gold_reward }} gold
+      {% if q.quest.item_reward %}
+        , {{ q.quest.item_reward.name }}
+      {% endif %}
+    </li>
+  {% empty %}
+    <li>No active quests.</li>
+  {% endfor %}
+</ul>
+
+<h2>🎁 Ready to Claim</h2>
+<ul>
+  {% for q in ready_to_claim %}
+    <li>
+      <strong>{{ q.quest.name }}</strong><br>
+      {{ q.quest.description }}<br>
+      ✅ Completed!<br>
+      Reward: {{ q.quest.experience_reward }} XP, {{ q.quest.gold_reward }} gold
+      {% if q.quest.item_reward %}
+        , {{ q.quest.item_reward.name }}
+      {% endif %}
+      <form method="post" action="{% url 'claim_quest_reward' q.id %}">
+        {% csrf_token %}
+        <button type="submit">Claim Reward</button>
+      </form>
+    </li>
+  {% empty %}
+    <li>No completed quests available for claiming.</li>
+  {% endfor %}
+</ul>
+
+<h2>✅ Completed Quests</h2>
+<ul>
+  {% for q in claimed %}
+    <li>
+      <strong>{{ q.quest.name }}</strong><br>
+      {{ q.quest.description }}<br>
+      Reward: {{ q.quest.experience_reward }} XP, {{ q.quest.gold_reward }} gold
+      {% if q.quest.item_reward %}
+        , {{ q.quest.item_reward.name }}
+      {% endif %}
+      <br>
+      Claimed on: {{ q.date_completed|date:"Y-m-d H:i" }}
+    </li>
+  {% empty %}
+    <li>No completed quests in history.</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'profile' %}">⬅️ Back to Profile</a>
+
+</body>
+</html>

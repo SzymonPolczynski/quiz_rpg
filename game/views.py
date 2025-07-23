@@ -4,6 +4,7 @@ from .models import Character, Question, Answer, Item, Category, Quest, QuestPro
 from django.contrib.auth.decorators import login_required
 from .forms import CharasterClassForm, StatAllocationForm
 from django.contrib import messages
+from django.utils import timezone
 
 
 @login_required
@@ -79,18 +80,7 @@ def quiz_view(request):
                         progress.correct_answers += 1
                         if progress.correct_answers >= progress.quest.required_correct_answers:
                             progress.is_completed = True
-
-                            # Quest rewards
-                            character.experience += progress.quest.experience_reward
-                            character.gold += progress.quest.gold_reward
-                            if progress.quest.item_reward:
-                                character.items.add(progress.quest.item_reward)
-                            
-                            messages.success(
-                                request,
-                                f"Quest completed: {progress.quest.name}! +{progress.quest.experience_reward} XP, +{progress.quest.gold_reward} gold, +{progress.quest.item_reward.name if progress.quest.item_reward else ''}"
-                            )
-
+                        messages.success(request, f"Quest completed: {progress.quest.name}!")
                         progress.save()
                 character.save()
             else:
@@ -341,3 +331,44 @@ def accept_quest_view(request, quest_id):
     messages.success(request, f"You have accepted the quest: {quest.name}.")
 
     return redirect("quest_list")
+
+
+@login_required
+def quest_log_view(request):
+    character = Character.objects.get(user=request.user)
+    active_quests = QuestProgress.objects.filter(character=character, is_completed=False)
+    ready_to_claim = QuestProgress.objects.filter(character=character, is_completed=True, reward_claimed=False)
+    claimed = QuestProgress.objects.filter(character=character, is_completed=True, reward_claimed=True)
+
+    return render(request, "game/quest_log.html", {
+        "active_quests": active_quests,
+        "ready_to_claim": ready_to_claim,
+        "claimed": claimed,
+    })
+
+
+@login_required
+def claim_quest_reward_view(request, progress_id):
+    character = Character.objects.get(user=request.user)
+    progress = get_object_or_404(QuestProgress, id=progress_id, character=character)
+
+    if progress.is_completed and not progress.reward_claimed:
+        character.experience += progress.quest.experience_reward
+        character.gold += progress.quest.gold_reward
+
+        if progress.quest.item_reward:
+            character.items.add(progress.quest.item_reward)
+            item_info = f" and received item: {progress.quest.item_reward.name}"
+        else:
+            item_info = ""
+
+        progress.reward_claimed = True
+        progress.date_completed = timezone.now()
+        progress.save()
+        character.save()
+
+        messages.success(request, f"Reward claimed: +{progress.quest.experience_reward} XP, +{progress.quest.gold_reward} gold{item_info}.")
+    else:
+        messages.warning(request, "You cannot claim this reward.")
+
+    return redirect("quest_log")

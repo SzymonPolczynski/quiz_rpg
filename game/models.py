@@ -1,6 +1,7 @@
 import random
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 from typing import TypedDict
 
 
@@ -231,6 +232,19 @@ class QuestProgress(models.Model):
     quest = models.ForeignKey("Quest", on_delete=models.CASCADE)
     correct_answers = models.PositiveIntegerField(default=0)
     is_completed = models.BooleanField(default=False)
+    reward_claimed = models.BooleanField(default=False)
+
+    date_started = models.DateTimeField(auto_now_add=True)
+    date_completed = models.DateTimeField(null=True, blank=True)
+
+    def complete(self):
+        self.is_completed = True
+        self.date_completed = timezone.now()
+        self.save()
+
+    def is_ready_to_claim(self):
+        return self.is_completed and not self.reward_claimed
 
     def __str__(self):
         return f"{self.character.user.username} - {self.quest.name} ({'Completed' if self.is_completed else 'In Progress'})"
+    
