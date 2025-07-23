@@ -34,7 +34,7 @@
         <li><strong>Agility:</strong> {{ character.total_agility }} (base: {{ character.agility }})</li>
         <li><strong>Luck:</strong> {{ character.total_luck }} (base: {{ character.luck }})</li>
     </ul>
-
+    <p><strong>Gold:</strong> {{ character.gold }} 🪙</p>
     <h3>Equipped Gear</h3>
     <ul>
     {% for slot in equipped_items %}
@@ -50,7 +50,10 @@
     {% endfor %}
     </ul>
 
-    <a href="{% url 'inventory' %}" class="button">🎒 Open Inventory</a>
+    <ul>
+        <a href="{% url 'inventory' %}" class="button">🎒 Open Inventory</a>
+        <a href="{% url 'shop' %}" class="button">🛒 Open Shop</a>
+    </ul>
 
     <div class="progress-bar-container">
         <div class="progress-bar-fill">

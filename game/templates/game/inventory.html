@@ -1,12 +1,20 @@
 <h3>Inventory</h3>
-
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+<p>Your gold: {{ character.gold }} 🪙</p>
 <ul>
   {% for item in items %}
     <li>
       {{ item.name }}
       <form method="post" action="{% url 'equip_item' item.id %}">
         {% csrf_token %}
-        <button type="submit">Equip</button>
+        <a href="{% url 'equip_item' item.id %}">Equip</a> |
+        <a href="{% url 'sell_item' item.id %}">Sell</a>
       </form>
     </li>
   {% empty %}

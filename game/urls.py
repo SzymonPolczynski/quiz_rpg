@@ -18,4 +18,7 @@ urlpatterns = [
         name="set_category",
     ),
     path("quiz/clear_category/", views.clear_category_view, name="clear_category"),
+    path("shop/", views.shop_view, name="shop"),
+    path("shop/buy/<int:item_id>/", views.buy_item_view, name="buy_item"),
+    path("shop/sell/<int:item_id>/", views.sell_item_view, name="sell_item"),
 ]

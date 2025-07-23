@@ -1,0 +1,27 @@
+<h2>Shop 🛒</h2>
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+<p>Welcome to the shop! Here you can buy items to help you on your quest.</p>
+
+<p>Your gold: {{ character.gold }} 🪙</p>
+
+<ul>
+  {% for item in items %}
+    <li>
+      <strong>{{ item.name }}</strong> — {{ item.price }} gold
+      <br>
+      {{ item.description }}
+      <br>
+      <a href="{% url 'buy_item' item.id %}">Buy</a>
+    </li>
+  {% empty %}
+    <li>No items available in the shop.</li>
+  {% endfor %}
+</ul>
+
+<p><a href="{% url 'profile' %}">Back to profile</a></p>

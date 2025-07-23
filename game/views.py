@@ -1,8 +1,9 @@
 import random
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Character, Question, Answer, Item, Category
 from django.contrib.auth.decorators import login_required
 from .forms import CharasterClassForm, StatAllocationForm
+from django.contrib import messages
 
 
 @login_required
@@ -59,6 +60,8 @@ def quiz_view(request):
                 if reward["double"]:
                     feedback += "Lucky! You received double XP! <br>"
                 feedback += f"Total XP: {reward['total']} <br>"
+                feedback += f"Gold earned: 2 <br>"
+                character.gold += 2
                 character.experience += reward["total"]
                 if character.experience >= character.level * 100:
                     character.level += 1
@@ -247,3 +250,47 @@ def set_category_view(request, category_id):
 def clear_category_view(request):
     request.session.pop("selected_category", None)
     return redirect("choose_category")
+
+
+@login_required
+def shop_view(request):
+    character = Character.objects.get(user=request.user)
+    items = Item.objects.filter(is_available_in_shop=True)
+
+    return render(request, "game/shop.html", {
+        "items": items,
+        "character": character,
+    })
+
+
+@login_required
+def buy_item_view(request, item_id):
+    character = Character.objects.get(user=request.user)
+    item = get_object_or_404(Item, id=item_id)
+
+    if item.price and character.gold >= item.price:
+        character.gold -= item.price
+        character.items.add(item)
+        character.save()
+        messages.success(request, f"You bought {item.name} for {item.price} gold.")
+    else:
+        messages.warning(request, "You do not have enough gold to buy this item.")
+
+    return redirect("shop")
+
+
+@login_required
+def sell_item_view(request, item_id):
+    character = Character.objects.get(user=request.user)
+    item = get_object_or_404(Item, id=item_id)
+
+    if item in character.items.all():
+        sell_price = item.price // 2 if item.price else 0
+        character.gold += sell_price
+        character.items.remove(item)
+        character.save()
+        messages.success(request, f"You sold {item.name} for {sell_price} gold.")
+    else:
+        messages.warning(request, "You do not own this item.")
+
+    return redirect("inventory")

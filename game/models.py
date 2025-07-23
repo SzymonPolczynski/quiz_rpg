@@ -73,6 +73,9 @@ class Character(models.Model):
 
     stat_points = models.IntegerField(default=0)
 
+    gold = models.IntegerField(default=0)
+
+
     class XpReward(TypedDict):
         total: int
         base: int
@@ -180,6 +183,8 @@ class Item(models.Model):
 
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
+    price = models.IntegerField(null=True, blank=True)
+    is_available_in_shop = models.BooleanField(default=False)
     slot = models.CharField(
         max_length=20,
         choices=SLOT_CHOICES,
