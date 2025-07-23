@@ -4,6 +4,14 @@
     <title>Quiz RPG</title>
 </head>
 <body>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <h1>Quiz Time!</h1>
     {% if question.category %}
         <p>Category: <strong>{{ question.category.name }}</strong></p>

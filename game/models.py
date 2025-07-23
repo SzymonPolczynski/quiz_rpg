@@ -160,7 +160,7 @@ class Answer(models.Model):
     """Model representing an answer to a quiz question."""
 
     question = models.ForeignKey(
-        Question, related_name="answers", on_delete=models.CASCADE
+        "Question", related_name="answers", on_delete=models.CASCADE
     )
     text = models.CharField(max_length=255)
     is_correct = models.BooleanField(default=False)
@@ -207,3 +207,30 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Quest(models.Model):
+    """Model representing a quest in the game."""
+
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True, blank=True)
+    required_correct_answers = models.PositiveIntegerField(default=1)
+    experience_reward = models.PositiveIntegerField(default=0)
+    gold_reward = models.PositiveIntegerField(default=0)
+    item_reward = models.ForeignKey("Item", on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+    
+
+class QuestProgress(models.Model):
+    """Model representing the progress of a quest for a character."""
+
+    character = models.ForeignKey("Character", on_delete=models.CASCADE)
+    quest = models.ForeignKey("Quest", on_delete=models.CASCADE)
+    correct_answers = models.PositiveIntegerField(default=0)
+    is_completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.character.user.username} - {self.quest.name} ({'Completed' if self.is_completed else 'In Progress'})"

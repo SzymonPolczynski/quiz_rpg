@@ -1,6 +1,6 @@
 import random
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Character, Question, Answer, Item, Category
+from .models import Character, Question, Answer, Item, Category, Quest, QuestProgress
 from django.contrib.auth.decorators import login_required
 from .forms import CharasterClassForm, StatAllocationForm
 from django.contrib import messages
@@ -52,6 +52,8 @@ def quiz_view(request):
         selected_answer_id = request.POST.get("answer")
         if selected_answer_id:
             answer = Answer.objects.get(id=selected_answer_id)
+
+            # Calculate XP reward based on the character's stats
             if answer.is_correct:
                 reward = character.get_xp_reward()
                 feedback = f"Correct! <br>"
@@ -69,6 +71,27 @@ def quiz_view(request):
                     character.stat_points += 5
                     feedback += f" Level up! You are now level {character.level}. <br>"
                     feedback += f" You have {character.stat_points} stat points to distribute. <br>"
+
+                # Quest progression
+                active_quests = QuestProgress.objects.filter(character=character, is_completed=False)
+                for progress in active_quests:
+                    if progress.quest.category == question.category:
+                        progress.correct_answers += 1
+                        if progress.correct_answers >= progress.quest.required_correct_answers:
+                            progress.is_completed = True
+
+                            # Quest rewards
+                            character.experience += progress.quest.experience_reward
+                            character.gold += progress.quest.gold_reward
+                            if progress.quest.item_reward:
+                                character.items.add(progress.quest.item_reward)
+                            
+                            messages.success(
+                                request,
+                                f"Quest completed: {progress.quest.name}! +{progress.quest.experience_reward} XP, +{progress.quest.gold_reward} gold, +{progress.quest.item_reward.name if progress.quest.item_reward else ''}"
+                            )
+
+                        progress.save()
                 character.save()
             else:
                 feedback = "Wrong answer."
@@ -294,3 +317,27 @@ def sell_item_view(request, item_id):
         messages.warning(request, "You do not own this item.")
 
     return redirect("inventory")
+
+
+@login_required
+def quest_list_view(request):
+    character = Character.objects.get(user=request.user)
+    accepted_ids = QuestProgress.objects.filter(character=character).values_list("quest_id", flat=True)
+    available_quests = Quest.objects.exclude(id__in=accepted_ids)
+
+    return render(request, "game/quest_list.html", {"quests": available_quests})
+
+
+@login_required
+def accept_quest_view(request, quest_id):
+    character = Character.objects.get(user=request.user)
+    quest = get_object_or_404(Quest, id=quest_id)
+
+    QuestProgress.objects.get_or_create(
+        character=character,
+        quest=quest
+    )
+
+    messages.success(request, f"You have accepted the quest: {quest.name}.")
+
+    return redirect("quest_list")

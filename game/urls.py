@@ -21,4 +21,6 @@ urlpatterns = [
     path("shop/", views.shop_view, name="shop"),
     path("shop/buy/<int:item_id>/", views.buy_item_view, name="buy_item"),
     path("shop/sell/<int:item_id>/", views.sell_item_view, name="sell_item"),
+    path("quests/", views.quest_list_view, name="quest_list"),
+    path("quests/accept/<int:quest_id>/", views.accept_quest_view, name="accept_quest"),
 ]

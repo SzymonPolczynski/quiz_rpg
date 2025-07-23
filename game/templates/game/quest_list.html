@@ -1,0 +1,27 @@
+<h2>Available Quests</h2>
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<ul>
+  {% for quest in quests %}
+    <li>
+      <strong>{{ quest.name }}</strong><br>
+      {{ quest.description }}<br>
+      Reward: {{ quest.experience_reward }} XP, {{ quest.gold_reward }} gold
+      {% if quest.item_reward %}
+        , {{ quest.item_reward.name }}
+      {% endif %}
+      <br>
+      <a href="{% url 'accept_quest' quest.id %}">Accept</a>
+    </li>
+  {% empty %}
+    <li>No available quests.</li>
+  {% endfor %}
+</ul>
+
+<p><a href="{% url 'profile' %}">Back to profile</a></p>
