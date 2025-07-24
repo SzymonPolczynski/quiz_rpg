@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Quiz RPG</title>
-</head>
-<body>
+{% extends "game/base.html" %}
+
+{% block title %}Quiz{% endblock %}
+
+{% block content %}
     {% if messages %}
         <ul>
             {% for message in messages %}
@@ -43,5 +42,4 @@
         {% endfor %}
         <button type="submit">Submit</button>
     </form>
-</body>
-</html>
+{% endblock %}

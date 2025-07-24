@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Allocate Stats</title>
-</head>
-<body>
+{% extends "game/base.html" %}
+
+{% block title %}Allocate Stats{% endblock %}
+
+{% block content %}
     <h1>Allocate Your Stat Points ({{ character.stat_points }} left)</h1>
     <form method="post">
         {% csrf_token %}
@@ -11,5 +10,4 @@
         <button type="submit">Confirm</button>
     </form>
     <p><a href="{% url 'profile' %}">Back to Profile</a></p>
-</body>
-</html>
+{% endblock %}

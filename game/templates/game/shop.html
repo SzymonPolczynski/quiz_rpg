@@ -1,3 +1,8 @@
+{% extends "game/base.html" %}
+
+{% block title %}Shop{% endblock %}
+
+{% block content %}
 <h2>Shop 🛒</h2>
 {% if messages %}
   <ul class="messages">
@@ -25,3 +30,4 @@
 </ul>
 
 <p><a href="{% url 'profile' %}">Back to profile</a></p>
+{% endblock %}

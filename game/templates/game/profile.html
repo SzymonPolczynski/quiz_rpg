@@ -1,7 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Your Profile</title>
+{% extends "game/base.html" %}
+
+{% block title %}Your Profile{% endblock %}
+
+{% block content %}
+
     <style>
         .progress-bar-container {
             width: 300px;
@@ -21,8 +23,7 @@
             font-weight: bold;
         }
     </style>
-</head>
-<body>
+
     <h1>{{ character.name }}'s profile</h1>
     <p><strong>Class:</strong> {{ character.get_character_class_display }}</p>
     <p><strong>Level:</strong> {{ character.level }}</p>
@@ -50,13 +51,6 @@
     {% endfor %}
     </ul>
 
-    <ul>
-        <a href="{% url 'inventory' %}" class="button">🎒 Open Inventory</a>
-        <a href="{% url 'shop' %}" class="button">🛒 Open Shop</a>
-        <a href="{% url 'quest_list' %}">📜 View Available Quests</a>
-        <a href="{% url 'quest_log' %}">📖 Quest Log</a>
-    </ul>
-
     <div class="progress-bar-container">
         <div class="progress-bar-fill">
             {{ xp_progress }}%
@@ -68,5 +62,4 @@
     {% endif %}
 
     <p><a href="{% url 'quiz' %}">🔁 Back to Quiz</a></p>
-</body>
-</html>
+{% endblock %}

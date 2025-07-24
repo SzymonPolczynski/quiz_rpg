@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Choose Your Class</title>
-</head>
-<body>
+{% extends "game/base.html" %}
+
+{% block title %}Choose Class{% endblock %}
+
+{% block content %}
+<h1>Choose Your Class</h1>
     <h1>Choose Your Class</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Confirm</button>
     </form>
-</body>
-</html>
+{% endblock %}

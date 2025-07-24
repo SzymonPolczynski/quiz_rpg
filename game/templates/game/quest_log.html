@@ -1,20 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Quest Log</title>
-</head>
-<body>
-{% if messages %}
-  <ul>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
+{% extends "game/base.html" %}
 
+{% block title %}Quest Log{% endblock %}
+
+{% block content %}
 <h1>📘 Quest Log</h1>
 
+<!-- Active Quests -->
 <h2>🔄 Active Quests</h2>
 <ul>
   {% for q in active_quests %}
@@ -32,6 +23,7 @@
   {% endfor %}
 </ul>
 
+<!-- Ready to Claim -->
 <h2>🎁 Ready to Claim</h2>
 <ul>
   {% for q in ready_to_claim %}
@@ -53,6 +45,7 @@
   {% endfor %}
 </ul>
 
+<!-- Claimed -->
 <h2>✅ Completed Quests</h2>
 <ul>
   {% for q in claimed %}
@@ -70,8 +63,4 @@
     <li>No completed quests in history.</li>
   {% endfor %}
 </ul>
-
-<a href="{% url 'profile' %}">⬅️ Back to Profile</a>
-
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Quiz RPG{% endblock %}</title>
+</head>
+<body>
+
+  <header>
+    <h1>Quiz RPG</h1>
+    <nav>
+      <a href="{% url 'home' %}">Home</a> |
+      <a href="{% url 'profile' %}">Profile</a> |
+      <a href="{% url 'inventory' %}">Inventory</a> |
+      <a href="{% url 'shop' %}">Shop</a> |
+      <a href="{% url 'quest_log' %}">Quest Log</a> |
+      <a href="{% url 'quest_list' %}">Quest Board</a>
+    </nav>
+    <hr>
+  </header>
+
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <main>
+    {% block content %}
+    <!-- Page-specific content goes here -->
+    {% endblock %}
+  </main>
+
+</body>
+</html>

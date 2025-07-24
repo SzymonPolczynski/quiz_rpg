@@ -1,3 +1,8 @@
+{% extends "game/base.html" %}
+
+{% block title %}Quest List{% endblock %}
+
+{% block content %}
 <h2>Available Quests</h2>
 {% if messages %}
   <ul>
@@ -25,3 +30,4 @@
 </ul>
 
 <p><a href="{% url 'profile' %}">Back to profile</a></p>
+{% endblock %}

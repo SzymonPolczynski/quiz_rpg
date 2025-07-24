@@ -8,6 +8,11 @@ from django.utils import timezone
 
 
 @login_required
+def base_view(request):
+    return render(request, "game/base.html")
+
+
+@login_required
 def home_view(request):
     return render(request, "game/home.html")
 
