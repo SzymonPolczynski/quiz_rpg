@@ -1,0 +1,110 @@
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0 20px;
+}
+
+header {
+    background-color: #222;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+header h1 {
+    color: white;
+    font-weight: bold;
+    font-size: 2em;
+    margin-bottom: 0.2em;
+}
+
+nav a {
+    color: #ddd;
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+nav a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+nav li {
+  background: none !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: list-item;
+}
+
+nav a:empty,
+nav div:empty,
+nav span:empty,
+nav li:empty {
+  display: none !important;
+}
+
+h1, h2 {
+    color: #2a2a2a;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-top: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+li {
+    background-color: white;
+    border: 1px solid #ccc;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Messages */
+ul.messages li {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+ul.messages li.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+ul.messages li.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+ul.messages li.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+ul.navbar-nav > li:empty {
+  display: none !important;
+}

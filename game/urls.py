@@ -1,9 +1,10 @@
 from django.urls import path
+from django.contrib.auth.views import LogoutView
 from . import views
 
 urlpatterns = [
-    path("", views.base_view, name="base"),
-    path("home/", views.home_view, name="home"),
+    path("", views.home_view, name="home"),
+    path("logout/", LogoutView.as_view(next_page="home"), name="logout"),
     path("quiz/", views.quiz_view, name="quiz"),
     path("choose_class/", views.choose_class_view, name="choose_class"),
     path("profile/", views.profile_view, name="profile"),
@@ -25,5 +26,9 @@ urlpatterns = [
     path("quests/", views.quest_list_view, name="quest_list"),
     path("quests/accept/<int:quest_id>/", views.accept_quest_view, name="accept_quest"),
     path("quest_log/", views.quest_log_view, name="quest_log"),
-    path("quest_log/claim/<int:progress_id>/", views.claim_quest_reward_view, name="claim_quest_reward"),
+    path(
+        "quest_log/claim/<int:progress_id>/",
+        views.claim_quest_reward_view,
+        name="claim_quest_reward",
+    ),
 ]

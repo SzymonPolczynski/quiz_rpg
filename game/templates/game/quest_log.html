@@ -1,66 +1,96 @@
 {% extends "game/base.html" %}
-
 {% block title %}Quest Log{% endblock %}
 
 {% block content %}
-<h1>📘 Quest Log</h1>
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card shadow">
+        <div class="card-header bg-info text-white">
+          <h4 class="mb-0"><i class="bi bi-journal-check"></i> Quest Log</h4>
+        </div>
+        <div class="card-body">
 
-<!-- Active Quests -->
-<h2>🔄 Active Quests</h2>
-<ul>
-  {% for q in active_quests %}
-    <li>
-      <strong>{{ q.quest.name }}</strong><br>
-      {{ q.quest.description }}<br>
-      Progress: {{ q.correct_answers }} / {{ q.quest.goal }}<br>
-      Reward: {{ q.quest.experience_reward }} XP, {{ q.quest.gold_reward }} gold
-      {% if q.quest.item_reward %}
-        , {{ q.quest.item_reward.name }}
-      {% endif %}
-    </li>
-  {% empty %}
-    <li>No active quests.</li>
-  {% endfor %}
-</ul>
+          <!-- Active Quests -->
+          <h5 class="text-primary mb-3">
+            <i class="bi bi-hourglass-split"></i> Active Quests
+          </h5>
+          {% if active_quests %}
+          <ul class="list-group mb-4">
+            {% for q in active_quests %}
+            <li class="list-group-item">
+              <strong>{{ q.quest.name }}</strong><br />
+              {{ q.quest.description }}<br />
+              <span class="text-muted">Progress:</span>
+              {{ q.correct_answers }} / {{ q.quest.goal }}<br />
+              <span class="text-muted">Reward:</span>
+              {{ q.quest.experience_reward }} XP,
+              {{ q.quest.gold_reward }} <i class="bi bi-coin"></i>
+              {% if q.quest.item_reward %}, {{ q.quest.item_reward.name }}{% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <div class="alert alert-secondary">No active quests.</div>
+          {% endif %}
 
-<!-- Ready to Claim -->
-<h2>🎁 Ready to Claim</h2>
-<ul>
-  {% for q in ready_to_claim %}
-    <li>
-      <strong>{{ q.quest.name }}</strong><br>
-      {{ q.quest.description }}<br>
-      ✅ Completed!<br>
-      Reward: {{ q.quest.experience_reward }} XP, {{ q.quest.gold_reward }} gold
-      {% if q.quest.item_reward %}
-        , {{ q.quest.item_reward.name }}
-      {% endif %}
-      <form method="post" action="{% url 'claim_quest_reward' q.id %}">
-        {% csrf_token %}
-        <button type="submit">Claim Reward</button>
-      </form>
-    </li>
-  {% empty %}
-    <li>No completed quests available for claiming.</li>
-  {% endfor %}
-</ul>
+          <!-- Ready to Claim -->
+          <h5 class="text-success mb-3">
+            <i class="bi bi-gift-fill"></i> Ready to Claim
+          </h5>
+          {% if ready_to_claim %}
+          <ul class="list-group mb-4">
+            {% for q in ready_to_claim %}
+            <li class="list-group-item">
+              <strong>{{ q.quest.name }}</strong><br />
+              {{ q.quest.description }}<br />
+              <span class="text-success">✅ Completed!</span><br />
+              <span class="text-muted">Reward:</span>
+              {{ q.quest.experience_reward }} XP,
+              {{ q.quest.gold_reward }} <i class="bi bi-coin"></i>
+              {% if q.quest.item_reward %}, {{ q.quest.item_reward.name }}{% endif %}
 
-<!-- Claimed -->
-<h2>✅ Completed Quests</h2>
-<ul>
-  {% for q in claimed %}
-    <li>
-      <strong>{{ q.quest.name }}</strong><br>
-      {{ q.quest.description }}<br>
-      Reward: {{ q.quest.experience_reward }} XP, {{ q.quest.gold_reward }} gold
-      {% if q.quest.item_reward %}
-        , {{ q.quest.item_reward.name }}
-      {% endif %}
-      <br>
-      Claimed on: {{ q.date_completed|date:"Y-m-d H:i" }}
-    </li>
-  {% empty %}
-    <li>No completed quests in history.</li>
-  {% endfor %}
-</ul>
+              <form method="post" action="{% url 'claim_quest_reward' q.id %}" class="mt-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-success">
+                  <i class="bi bi-hand-thumbs-up-fill"></i> Claim Reward
+                </button>
+              </form>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <div class="alert alert-secondary">No completed quests available for claiming.</div>
+          {% endif %}
+
+          <!-- Completed Quests -->
+          <h5 class="text-muted mb-3">
+            <i class="bi bi-check2-circle"></i> Completed Quests
+          </h5>
+          {% if claimed %}
+          <ul class="list-group">
+            {% for q in claimed %}
+            <li class="list-group-item">
+              <strong>{{ q.quest.name }}</strong><br />
+              {{ q.quest.description }}<br />
+              <span class="text-muted">Reward:</span>
+              {{ q.quest.experience_reward }} XP,
+              {{ q.quest.gold_reward }} <i class="bi bi-coin"></i>
+              {% if q.quest.item_reward %}, {{ q.quest.item_reward.name }}{% endif %}<br />
+              <small class="text-muted">Claimed on: {{ q.date_completed|date:"Y-m-d H:i" }}</small>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <div class="alert alert-secondary">No completed quests in history.</div>
+          {% endif %}
+
+          <a href="{% url 'quiz' %}" class="btn btn-secondary mt-4">
+            <i class="bi bi-arrow-left"></i> Back to Quiz
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

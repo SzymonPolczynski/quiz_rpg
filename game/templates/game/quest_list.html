@@ -1,33 +1,53 @@
 {% extends "game/base.html" %}
-
 {% block title %}Quest List{% endblock %}
 
 {% block content %}
-<h2>Available Quests</h2>
-{% if messages %}
-  <ul>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card shadow">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-journal-bookmark"></i> Available Quests
+          </h4>
+        </div>
+        <div class="card-body">
+          {% if quests %}
+          <div class="row row-cols-1 row-cols-md-2 g-3">
+            {% for quest in quests %}
+            <div class="col">
+              <div class="card h-100 border-success">
+                <div class="card-body">
+                  <h5 class="card-title">{{ quest.name }}</h5>
+                  <p class="card-text">{{ quest.description }}</p>
+                  <p class="card-text">
+                    <strong>Reward:</strong>
+                    {{ quest.experience_reward }} XP,
+                    {{ quest.gold_reward }} <i class="bi bi-coin"></i>
+                    {% if quest.item_reward %}
+                      , {{ quest.item_reward.name }}
+                    {% endif %}
+                  </p>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                  <a href="{% url 'accept_quest' quest.id %}" class="btn btn-outline-success btn-sm">
+                    <i class="bi bi-check2-circle"></i> Accept
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="alert alert-info">No available quests at the moment.</div>
+          {% endif %}
 
-<ul>
-  {% for quest in quests %}
-    <li>
-      <strong>{{ quest.name }}</strong><br>
-      {{ quest.description }}<br>
-      Reward: {{ quest.experience_reward }} XP, {{ quest.gold_reward }} gold
-      {% if quest.item_reward %}
-        , {{ quest.item_reward.name }}
-      {% endif %}
-      <br>
-      <a href="{% url 'accept_quest' quest.id %}">Accept</a>
-    </li>
-  {% empty %}
-    <li>No available quests.</li>
-  {% endfor %}
-</ul>
-
-<p><a href="{% url 'profile' %}">Back to profile</a></p>
+          <a href="{% url 'quiz' %}" class="btn btn-secondary mt-4">
+            <i class="bi bi-arrow-left"></i> Back to Quiz
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

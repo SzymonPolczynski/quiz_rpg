@@ -1,15 +1,33 @@
-{% extends "game/base.htmlbase.html" %}
-
+{% extends "game/base.html" %}
 {% block title %}Choose Category{% endblock %}
 
 {% block content %}
-<h2>Choose a Category</h2>
-
-<ul>
-  {% for category in categories %}
-    <li>
-      <a href="{% url 'set_category' category.id %}">{{ category.name }}</a>
-    </li>
-  {% endfor %}
-</ul>
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-list-ul"></i> Choose Quiz Category
+          </h4>
+        </div>
+        <div class="card-body">
+          {% if categories %}
+            <div class="d-grid gap-2">
+              {% for category in categories %}
+                <a href="{% url 'set_category' category.id %}" class="btn btn-outline-primary btn-lg">
+                  <i class="bi bi-lightbulb"></i> {{ category.name }}
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="alert alert-info mt-3">
+              No categories available at the moment.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

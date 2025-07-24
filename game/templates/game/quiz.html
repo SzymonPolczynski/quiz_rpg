@@ -1,45 +1,68 @@
 {% extends "game/base.html" %}
-
 {% block title %}Quiz{% endblock %}
 
 {% block content %}
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+          <h4 class="mb-0"><i class="bi bi-question-circle"></i> Quiz Time!</h4>
+        </div>
+        <div class="card-body">
 
-    <h1>Quiz Time!</h1>
-    {% if question.category %}
-        <p>Category: <strong>{{ question.category.name }}</strong></p>
-    {% endif %}
+          {% if question.category %}
+          <p class="mb-2">
+            <strong>Category:</strong> {{ question.category.name }}
+          </p>
+          {% endif %}
 
-    <p>
-        <a href="{% url 'clear_category' %}">🔄 Change category</a>
-    </p>
+          <p>
+            <a href="{% url 'clear_category' %}" class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-arrow-repeat"></i> Change Category
+            </a>
+          </p>
 
-    <p><strong>Player:</strong> {{ character.name }}</p>
-    <p><strong>Class:</strong> {{ character.get_character_class_display }}</p>
-    <p><strong>Level:</strong> {{ character.level }}</p>
-    <p><strong>XP:</strong> {{ character.experience }} / {{ character.level|add:"0" }}00</p>
-    <p><a href="{% url 'profile' %}">View Profile</a></p>
+          <div class="mb-3 row row-cols-2">
+            <p class="mb-1"><strong>Player:</strong> {{ character.name }}</p>
+            <p class="mb-1"><strong>Class:</strong> {{ character.get_character_class_display }}</p>
+            <p class="mb-1"><strong>Level:</strong> {{ character.level }}</p>
+            <p class="mb-1">
+              <strong>XP:</strong> {{ character.experience }} / {{ character.level|add:"0" }}00
+            </p>
+          </div>
 
+          {% if feedback %}
+          <div class="alert alert-info">{{ feedback|safe }}</div>
+          {% endif %}
 
-    {% if feedback %}
-    <p><strong>{{ feedback|safe }}</strong></p>
-    {% endif %}
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <h5 class="mb-3">{{ question.text }}</h5>
+              {% for answer in question.answers.all %}
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="answer"
+                  id="answer{{ answer.id }}"
+                  value="{{ answer.id }}"
+                />
+                <label class="form-check-label" for="answer{{ answer.id }}">
+                  {{ answer.text }}
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-circle"></i> Submit
+            </button>
+          </form>
 
-    <p><strong>{{ question.text }}</strong></p>
-    <form method="post">
-        {% csrf_token %}
-        {% for answer in question.answers.all %}
-            <label>
-                <input type="radio" name="answer" value="{{ answer.id }}">
-                {{ answer.text }}
-            </label><br>
-        {% endfor %}
-        <button type="submit">Submit</button>
-    </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

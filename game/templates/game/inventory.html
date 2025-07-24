@@ -1,32 +1,47 @@
 {% extends "game/base.html" %}
-
 {% block title %}Inventory{% endblock %}
 
 {% block content %}
-<h3>Inventory</h3>
-{% if messages %}
-  <ul class="messages">
-    {% for message in messages %}
-      <li class="{{ message.tags }}">{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
-<p>Your gold: {{ character.gold }} 🪙</p>
-<ul>
-  {% for item in items %}
-    <li>
-      {{ item.name }}
-      <form method="post" action="{% url 'equip_item' item.id %}">
-        {% csrf_token %}
-        <a href="{% url 'equip_item' item.id %}">Equip</a> |
-        <a href="{% url 'sell_item' item.id %}">Sell</a>
-      </form>
-    </li>
-  {% empty %}
-    <li>No items in inventory.</li>
-  {% endfor %}
-</ul>
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-secondary text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-backpack"></i> Inventory
+          </h4>
+        </div>
+        <div class="card-body">
+          <p class="mb-3">
+            <strong>Your gold:</strong> <i class="bi bi-coin"></i> {{ character.gold }}
+          </p>
 
+          {% if items %}
+          <ul class="list-group">
+            {% for item in items %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ item.name }}</span>
+              <div class="d-flex gap-2">
+                <a href="{% url 'equip_item' item.id %}" class="btn btn-sm btn-success">
+                  <i class="bi bi-shield"></i> Equip
+                </a>
+                <a href="{% url 'sell_item' item.id %}" class="btn btn-sm btn-outline-danger">
+                  <i class="bi bi-cash"></i> Sell
+                </a>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <div class="alert alert-info mt-3">No items in inventory.</div>
+          {% endif %}
 
-<a href="{% url 'profile' %}" class="btn btn-secondary">⬅️ Return to Profile</a>
+          <a href="{% url 'quiz' %}" class="btn btn-secondary mt-4">
+            <i class="bi bi-arrow-left"></i> Back to Quiz
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

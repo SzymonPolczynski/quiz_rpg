@@ -1,13 +1,27 @@
 {% extends "game/base.html" %}
-
 {% block title %}Choose Class{% endblock %}
 
 {% block content %}
-<h1>Choose Your Class</h1>
-    <h1>Choose Your Class</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Confirm</button>
-    </form>
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-shield-plus"></i> Choose Your Class
+          </h4>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success mt-3">
+              <i class="bi bi-check-circle"></i> Confirm
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

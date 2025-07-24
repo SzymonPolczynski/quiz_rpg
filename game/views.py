@@ -8,11 +8,6 @@ from django.utils import timezone
 
 
 @login_required
-def base_view(request):
-    return render(request, "game/base.html")
-
-
-@login_required
 def home_view(request):
     return render(request, "game/home.html")
 
@@ -79,13 +74,20 @@ def quiz_view(request):
                     feedback += f" You have {character.stat_points} stat points to distribute. <br>"
 
                 # Quest progression
-                active_quests = QuestProgress.objects.filter(character=character, is_completed=False)
+                active_quests = QuestProgress.objects.filter(
+                    character=character, is_completed=False
+                )
                 for progress in active_quests:
                     if progress.quest.category == question.category:
                         progress.correct_answers += 1
-                        if progress.correct_answers >= progress.quest.required_correct_answers:
+                        if (
+                            progress.correct_answers
+                            >= progress.quest.required_correct_answers
+                        ):
                             progress.is_completed = True
-                        messages.success(request, f"Quest completed: {progress.quest.name}!")
+                        messages.success(
+                            request, f"Quest completed: {progress.quest.name}!"
+                        )
                         progress.save()
                 character.save()
             else:
@@ -275,10 +277,14 @@ def shop_view(request):
     character = Character.objects.get(user=request.user)
     items = Item.objects.filter(is_available_in_shop=True)
 
-    return render(request, "game/shop.html", {
-        "items": items,
-        "character": character,
-    })
+    return render(
+        request,
+        "game/shop.html",
+        {
+            "items": items,
+            "character": character,
+        },
+    )
 
 
 @login_required
@@ -317,7 +323,9 @@ def sell_item_view(request, item_id):
 @login_required
 def quest_list_view(request):
     character = Character.objects.get(user=request.user)
-    accepted_ids = QuestProgress.objects.filter(character=character).values_list("quest_id", flat=True)
+    accepted_ids = QuestProgress.objects.filter(character=character).values_list(
+        "quest_id", flat=True
+    )
     available_quests = Quest.objects.exclude(id__in=accepted_ids)
 
     return render(request, "game/quest_list.html", {"quests": available_quests})
@@ -328,10 +336,7 @@ def accept_quest_view(request, quest_id):
     character = Character.objects.get(user=request.user)
     quest = get_object_or_404(Quest, id=quest_id)
 
-    QuestProgress.objects.get_or_create(
-        character=character,
-        quest=quest
-    )
+    QuestProgress.objects.get_or_create(character=character, quest=quest)
 
     messages.success(request, f"You have accepted the quest: {quest.name}.")
 
@@ -341,15 +346,25 @@ def accept_quest_view(request, quest_id):
 @login_required
 def quest_log_view(request):
     character = Character.objects.get(user=request.user)
-    active_quests = QuestProgress.objects.filter(character=character, is_completed=False)
-    ready_to_claim = QuestProgress.objects.filter(character=character, is_completed=True, reward_claimed=False)
-    claimed = QuestProgress.objects.filter(character=character, is_completed=True, reward_claimed=True)
+    active_quests = QuestProgress.objects.filter(
+        character=character, is_completed=False
+    )
+    ready_to_claim = QuestProgress.objects.filter(
+        character=character, is_completed=True, reward_claimed=False
+    )
+    claimed = QuestProgress.objects.filter(
+        character=character, is_completed=True, reward_claimed=True
+    )
 
-    return render(request, "game/quest_log.html", {
-        "active_quests": active_quests,
-        "ready_to_claim": ready_to_claim,
-        "claimed": claimed,
-    })
+    return render(
+        request,
+        "game/quest_log.html",
+        {
+            "active_quests": active_quests,
+            "ready_to_claim": ready_to_claim,
+            "claimed": claimed,
+        },
+    )
 
 
 @login_required
@@ -372,7 +387,10 @@ def claim_quest_reward_view(request, progress_id):
         progress.save()
         character.save()
 
-        messages.success(request, f"Reward claimed: +{progress.quest.experience_reward} XP, +{progress.quest.gold_reward} gold{item_info}.")
+        messages.success(
+            request,
+            f"Reward claimed: +{progress.quest.experience_reward} XP, +{progress.quest.gold_reward} gold{item_info}.",
+        )
     else:
         messages.warning(request, "You cannot claim this reward.")
 

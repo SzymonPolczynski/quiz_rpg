@@ -1,13 +1,35 @@
 {% extends "game/base.html" %}
-
 {% block title %}Allocate Stats{% endblock %}
 
 {% block content %}
-    <h1>Allocate Your Stat Points ({{ character.stat_points }} left)</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Confirm</button>
-    </form>
-    <p><a href="{% url 'profile' %}">Back to Profile</a></p>
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-sliders"></i> Allocate Stat Points
+          </h4>
+        </div>
+        <div class="card-body">
+          <p>
+            You have <strong>{{ character.stat_points }}</strong> unallocated stat point{{ character.stat_points|pluralize }}.
+          </p>
+
+          <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success mt-3">
+              <i class="bi bi-check-circle"></i> Confirm
+            </button>
+          </form>
+
+          <a href="{% url 'profile' %}" class="btn btn-secondary mt-3">
+            <i class="bi bi-arrow-left"></i> Back to Profile
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

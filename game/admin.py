@@ -14,7 +14,14 @@ class QuestionAdmin(admin.ModelAdmin):
 
 @admin.register(Quest)
 class QuestAdmin(admin.ModelAdmin):
-    list_display = ("name", "category", "required_correct_answers", "experience_reward", "gold_reward", "item_reward")
+    list_display = (
+        "name",
+        "category",
+        "required_correct_answers",
+        "experience_reward",
+        "gold_reward",
+        "item_reward",
+    )
 
 
 @admin.register(QuestProgress)
