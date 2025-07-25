@@ -22,17 +22,21 @@ class Character(models.Model):
 
     level = models.IntegerField(default=1)
     experience = models.IntegerField(default=0)
+    experience_to_next_level = models.PositiveIntegerField(default=100)
 
     hp = models.PositiveIntegerField(default=100)
     max_hp = models.PositiveIntegerField(default=100)
+    hp_from_levels = models.PositiveIntegerField(default=0)
 
     mana = models.PositiveIntegerField(default=50)
     max_mana = models.PositiveIntegerField(default=50)
+    mana_from_levels = models.PositiveIntegerField(default=0)
 
     stamina = models.PositiveIntegerField(default=50)
     max_stamina = models.PositiveIntegerField(default=50)
 
     armor = models.PositiveIntegerField(default=0)
+    damage_reduction = models.FloatField(default=0.0)
 
     physical_min_damage = models.PositiveIntegerField(default=1)
     physical_max_damage = models.PositiveIntegerField(default=3)

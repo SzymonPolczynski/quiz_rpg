@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from game.services.leveling import check_level_up
 
 
 def register_view(request):
@@ -81,12 +82,7 @@ def quiz_view(request):
                 feedback += f"Gold earned: 2 <br>"
                 character.gold += 2
                 character.experience += reward["total"]
-                if character.experience >= character.level * 100:
-                    character.level += 1
-                    character.experience = 0
-                    character.stat_points += 5
-                    feedback += f" Level up! You are now level {character.level}. <br>"
-                    feedback += f" You have {character.stat_points} stat points to distribute. <br>"
+                check_level_up(character)
 
                 # Quest progression
                 active_quests = QuestProgress.objects.filter(
