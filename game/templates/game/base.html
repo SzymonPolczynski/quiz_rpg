@@ -36,18 +36,29 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'quest_list' %}"><i class="bi bi-list-columns"></i> Quest Board</a></li>
           </ul>
 
-          {% if user.is_authenticated and character %}
           <div class="d-flex align-items-center gap-3 text-nowrap">
-            <span class="text-light"><i class="bi bi-person-circle"></i> {{ character.name }} (Lv {{ character.level }})</span>
-            <span class="text-warning"><i class="bi bi-lightning-fill"></i> {{ character.experience }} / {{ character.level|add:"0" }}00 XP</span>
-            <span class="text-warning"><i class="bi bi-coin"></i> {{ character.gold }}</span>
-            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            {% if user.is_authenticated %}
+              {% if character %}
+                <span class="text-light"><i class="bi bi-person-circle"></i> {{ character.name }} (Lv {{ character.level }})</span>
+                <span class="text-warning"><i class="bi bi-lightning-fill"></i> {{ character.experience }} / {{ character.level|add:"0" }}00 XP</span>
+                <span class="text-warning"><i class="bi bi-coin"></i> {{ character.gold }}</span>
+              {% else %}
+                <span class="text-light"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
+              {% endif %}
+              <form method="post" action="{% url 'logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-light btn-sm">
+                  <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+              </form>
+            {% else %}
+              <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+              <a href="{% url 'register' %}" class="btn btn-outline-light btn-sm"><i class="bi bi-person-plus"></i> Register</a>
+            {% endif %}
           </div>
-          {% endif %}
         </div>
       </nav>
     </header>
-
 
     {% if messages %}
       <div class="container mt-3">
@@ -70,4 +81,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
-

@@ -5,6 +5,20 @@ from django.contrib.auth.decorators import login_required
 from .forms import CharasterClassForm, StatAllocationForm
 from django.contrib import messages
 from django.utils import timezone
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+
+
+def register_view(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("create_character")
+    else:
+        form = UserCreationForm()
+    return render(request, "game/register.html", {"form": form})
 
 
 @login_required
@@ -395,3 +409,23 @@ def claim_quest_reward_view(request, progress_id):
         messages.warning(request, "You cannot claim this reward.")
 
     return redirect("quest_log")
+
+
+@login_required
+def create_character_view(request):
+    if hasattr(request.user, "character"):
+        return redirect("home")
+    
+    if request.method == "POST":
+        name = request.POST.get("name")
+        class_choice = request.POST.get("class")
+
+        if name and class_choice:
+            Character.objects.create(
+                user=request.user,
+                name=name,
+                character_class=class_choice,
+            )
+            return redirect("home")
+        
+    return render(request, "game/create_character.html")

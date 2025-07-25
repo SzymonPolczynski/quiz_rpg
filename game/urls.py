@@ -1,10 +1,12 @@
 from django.urls import path
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
     path("", views.home_view, name="home"),
-    path("logout/", LogoutView.as_view(next_page="home"), name="logout"),
+    path("login/", auth_views.LoginView.as_view(template_name="game/login.html"), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(next_page="home"), name="logout"),
+    path("register/", views.register_view, name="register"),
     path("quiz/", views.quiz_view, name="quiz"),
     path("choose_class/", views.choose_class_view, name="choose_class"),
     path("profile/", views.profile_view, name="profile"),
@@ -31,4 +33,5 @@ urlpatterns = [
         views.claim_quest_reward_view,
         name="claim_quest_reward",
     ),
+    path("create_character/", views.create_character_view, name="create_character"),
 ]
