@@ -19,8 +19,29 @@ class Character(models.Model):
     character_class = models.CharField(
         max_length=20, choices=CLASS_CHOICES, default="warrior"
     )
+
     level = models.IntegerField(default=1)
     experience = models.IntegerField(default=0)
+
+    hp = models.PositiveIntegerField(default=100)
+    max_hp = models.PositiveIntegerField(default=100)
+
+    mana = models.PositiveIntegerField(default=50)
+    max_mana = models.PositiveIntegerField(default=50)
+
+    stamina = models.PositiveIntegerField(default=50)
+    max_stamina = models.PositiveIntegerField(default=50)
+
+    armor = models.PositiveIntegerField(default=0)
+
+    physical_min_damage = models.PositiveIntegerField(default=1)
+    physical_max_damage = models.PositiveIntegerField(default=3)
+
+    spell_power = models.PositiveIntegerField(default=0)
+
+    hp_regeneration = models.PositiveIntegerField(default=0)
+    mana_regeneration = models.PositiveIntegerField(default=0)
+    stamina_regeneration = models.PositiveIntegerField(default=0)
 
     items = models.ManyToManyField("Item", related_name="characters", blank=True)
 
@@ -195,6 +216,23 @@ class Item(models.Model):
     effect_intelligence = models.IntegerField(default=0)
     effect_agility = models.IntegerField(default=0)
     effect_luck = models.IntegerField(default=0)
+
+    min_damage = models.PositiveIntegerField(default=0)
+    max_damage = models.PositiveIntegerField(default=0)
+    armor = models.PositiveIntegerField(default=0)
+    spell_power = models.PositiveIntegerField(default=0)
+
+    hp_bonus = models.IntegerField(default=0)
+    mana_bonus = models.IntegerField(default=0)
+    stamina_bonus = models.IntegerField(default=0)
+
+    required_class = models.CharField(
+        max_length=20,
+        choices=Character.CLASS_CHOICES,
+        null=True,
+        blank=True,
+        help_text="If set, only characters of this class can equip the item.",
+    )
 
     def __str__(self):
         return self.name
