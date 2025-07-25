@@ -90,7 +90,8 @@ class Character(models.Model):
 
     strength = models.IntegerField(default=5)
     intelligence = models.IntegerField(default=5)
-    agility = models.IntegerField(default=5)
+    dexterity = models.IntegerField(default=5)
+    vitality = models.IntegerField(default=5)
     luck = models.IntegerField(default=5)
 
     stat_points = models.IntegerField(default=0)
@@ -139,14 +140,22 @@ class Character(models.Model):
         )
 
     @property
-    def total_agility(self):
-        return self.agility + sum(
-            item.effect_agility for item in self.get_eqquipped_items()
+    def total_dexterity(self):
+        return self.dexterity + sum(
+            item.effect_dexterity for item in self.get_eqquipped_items()
+        )
+
+    @property
+    def total_vitality(self):
+        return self.vitality + sum(
+            item.effect_vitality for item in self.get_eqquipped_items()
         )
 
     @property
     def total_luck(self):
-        return self.luck + sum(item.effect_luck for item in self.get_eqquipped_items())
+        return self.luck + sum(
+            item.effect_luck for item in self.get_eqquipped_items()
+        )
 
     def get_eqquipped_items(self):
         return filter(
@@ -214,7 +223,8 @@ class Item(models.Model):
 
     effect_strength = models.IntegerField(default=0)
     effect_intelligence = models.IntegerField(default=0)
-    effect_agility = models.IntegerField(default=0)
+    effect_dexterity = models.IntegerField(default=0)
+    effect_vitality = models.IntegerField(default=0)
     effect_luck = models.IntegerField(default=0)
 
     min_damage = models.PositiveIntegerField(default=0)

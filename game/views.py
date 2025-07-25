@@ -165,7 +165,8 @@ def allocate_stats_view(request):
             before = {
                 "strength": character.strength,
                 "intelligence": character.intelligence,
-                "agility": character.agility,
+                "dexterity": character.dexterity,
+                "vitality": character.vitality,
                 "luck": character.luck,
             }
 
@@ -176,7 +177,8 @@ def allocate_stats_view(request):
             else:
                 character.strength = new_values["strength"]
                 character.intelligence = new_values["intelligence"]
-                character.agility = new_values["agility"]
+                character.dexterity = new_values["dexterity"]
+                character.vitality = new_values["vitality"]
                 character.luck = new_values["luck"]
                 character.stat_points -= total_used
                 character.save()
@@ -186,7 +188,8 @@ def allocate_stats_view(request):
             initial={
                 "strength": character.strength,
                 "intelligence": character.intelligence,
-                "agility": character.agility,
+                "dexterity": character.dexterity,
+                "vitality": character.vitality,
                 "luck": character.luck,
             }
         )
@@ -223,7 +226,7 @@ def use_item_view(request, item_id):
 
     character.strength += item.effect_strength
     character.intelligence += item.effect_intelligence
-    character.agility += item.effect_agility
+    character.dexterity += item.effect_dexterity
     character.luck += item.effect_luck
 
     character.items.remove(item)

@@ -16,5 +16,6 @@ class StatAllocationForm(forms.Form):
 
     strength = forms.IntegerField(min_value=0)
     intelligence = forms.IntegerField(min_value=0)
-    agility = forms.IntegerField(min_value=0)
+    dexterity = forms.IntegerField(min_value=0)
+    vitality = forms.IntegerField(min_value=0)
     luck = forms.IntegerField(min_value=0)
