@@ -2,6 +2,7 @@ import random
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Character, Question, Answer, Item, Category, Quest, QuestProgress
 from django.contrib.auth.decorators import login_required
+from .decorators import character_required
 from .forms import CharasterClassForm, StatAllocationForm
 from django.contrib import messages
 from django.utils import timezone
@@ -21,7 +22,7 @@ def register_view(request):
     return render(request, "game/register.html", {"form": form})
 
 
-@login_required
+@character_required
 def home_view(request):
     return render(request, "game/home.html")
 
@@ -41,7 +42,7 @@ def choose_class_view(request):
     return render(request, "game/choose_class.html", {"form": form})
 
 
-@login_required
+@character_required
 def quiz_view(request):
     character, created = Character.objects.get_or_create(
         user=request.user,
@@ -116,7 +117,7 @@ def quiz_view(request):
     )
 
 
-@login_required
+@character_required
 def profile_view(request):
     SLOTS = [
         ("head", "Head"),
@@ -152,7 +153,7 @@ def profile_view(request):
     )
 
 
-@login_required
+@character_required
 def allocate_stats_view(request):
     character = Character.objects.get(user=request.user)
 
@@ -200,7 +201,7 @@ def allocate_stats_view(request):
     )
 
 
-@login_required
+@character_required
 def inventory_view(request):
     character = Character.objects.get(user=request.user)
     items = character.items.all()
@@ -286,7 +287,7 @@ def clear_category_view(request):
     return redirect("choose_category")
 
 
-@login_required
+@character_required
 def shop_view(request):
     character = Character.objects.get(user=request.user)
     items = Item.objects.filter(is_available_in_shop=True)
@@ -334,7 +335,7 @@ def sell_item_view(request, item_id):
     return redirect("inventory")
 
 
-@login_required
+@character_required
 def quest_list_view(request):
     character = Character.objects.get(user=request.user)
     accepted_ids = QuestProgress.objects.filter(character=character).values_list(
@@ -357,7 +358,7 @@ def accept_quest_view(request, quest_id):
     return redirect("quest_list")
 
 
-@login_required
+@character_required
 def quest_log_view(request):
     character = Character.objects.get(user=request.user)
     active_quests = QuestProgress.objects.filter(
