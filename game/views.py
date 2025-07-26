@@ -415,7 +415,7 @@ def claim_quest_reward_view(request, progress_id):
 def create_character_view(request):
     if hasattr(request.user, "character"):
         return redirect("home")
-    
+
     if request.method == "POST":
         name = request.POST.get("name")
         class_choice = request.POST.get("class")
@@ -427,5 +427,5 @@ def create_character_view(request):
                 character_class=class_choice,
             )
             return redirect("home")
-        
+
     return render(request, "game/create_character.html")

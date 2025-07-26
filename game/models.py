@@ -157,9 +157,7 @@ class Character(models.Model):
 
     @property
     def total_luck(self):
-        return self.luck + sum(
-            item.effect_luck for item in self.get_eqquipped_items()
-        )
+        return self.luck + sum(item.effect_luck for item in self.get_eqquipped_items())
 
     def get_eqquipped_items(self):
         return filter(
