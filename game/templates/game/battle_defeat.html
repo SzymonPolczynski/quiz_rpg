@@ -1,0 +1,10 @@
+{% extends "game/base.html" %}
+{% block title %}Defeated{% endblock %}
+{% block content %}
+<div class="container text-center mt-5">
+  <h2 class="text-danger">💀 You were defeated... 💀</h2>
+  <p>But this is not the end. Rest, recover, and fight again.</p>
+
+  <a href="{% url 'profile' %}" class="btn btn-primary mt-3">Back to Profile</a>
+</div>
+{% endblock %}

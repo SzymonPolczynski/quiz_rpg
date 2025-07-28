@@ -1,6 +1,6 @@
 import random
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Character, Question, Answer, Item, Category, Quest, QuestProgress
+from .models import Character, Question, Answer, Item, Category, Quest, QuestProgress, Enemy
 from django.contrib.auth.decorators import login_required
 from .decorators import character_required
 from .forms import CharasterClassForm, StatAllocationForm
@@ -429,3 +429,70 @@ def create_character_view(request):
             return redirect("home")
 
     return render(request, "game/create_character.html")
+
+
+@character_required
+def battle_view(request):
+    character = request.user.character
+
+    enemy_id = request.session.get("current_enemy_id")
+
+    if enemy_id:
+        enemy = Enemy.objects.filter(id=enemy_id).first()
+
+        if not enemy:
+            enemy = random.choice(Enemy.objects.all())
+            request.session["current_enemy_id"] = enemy.pk
+            request.session["enemy_hp"] = enemy.max_hp
+
+    else:
+        enemy = random.choice(Enemy.objects.all())
+        request.session["current_enemy_id"] = enemy.pk
+        request.session["enemy_hp"] = enemy.max_hp
+
+    enemy_hp = request.session.get("enemy_hp", enemy.max_hp)
+
+    if request.method == "POST":
+        dmg = random.randint(character.physical_min_damage, character.physical_max_damage)
+        dmg_after_armor = max(dmg - enemy.armor, 0)
+        enemy_hp -= dmg_after_armor
+
+        request.session["enemy_hp"] = enemy_hp
+
+        if enemy_hp <= 0:
+            character.experience += enemy.xp_reward
+            character.gold += enemy.gold_reward
+            request.session.pop("current_enemy_id", None)
+            request.session.pop("enemy_hp", None)
+
+            messages.success(request, f"You defeated {enemy.name} and earned {enemy.gold_reward} gold and {enemy.xp_reward} XP!")
+            check_level_up(character)
+            character.save()
+
+            return redirect("battle")
+        
+        enemy_dmg = max(enemy.power - character.armor, 0)
+        character.hp = max(character.hp - enemy_dmg, 0)
+
+        if character.hp <= 0:
+            request.session.pop("current_enemy_id", None)
+            request.session.pop("enemy_hp", None)
+
+            messages.error(request, f"You were defeated by {enemy.name}!")
+            character.save()
+            return redirect("battle_defeat")
+
+        character.save()
+
+        messages.info(request, f"You hit {enemy.name} for {dmg_after_armor} dmg. Enemy hit you for {enemy_dmg} dmg.")
+
+    return render(request, "game/battle.html", {
+        "enemy": enemy,
+        "enemy_hp": enemy_hp,
+        "character": character,
+    })
+
+
+@character_required
+def battle_defeat_view(request):
+    return render(request, "game/battle_defeat.html")

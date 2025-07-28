@@ -1,0 +1,16 @@
+{% extends "game/base.html" %}
+{% block title %}Battle{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h2>⚔️ {{ enemy.name }}</h2>
+  <p>HP: {{ enemy_hp }} / {{ enemy.max_hp }}</p>
+
+  <p><strong>Your HP:</strong> {{ character.hp }} / {{ character.max_hp }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger">Attack</button>
+  </form>
+</div>
+{% endblock %}

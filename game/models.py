@@ -300,3 +300,18 @@ class QuestProgress(models.Model):
 
     def __str__(self):
         return f"{self.character.user.username} - {self.quest.name} ({'Completed' if self.is_completed else 'In Progress'})"
+
+
+class Enemy(models.Model):
+    """Model representing the enemy in PvE encounters."""
+
+    name = models.CharField(max_length=100)
+    max_hp = models.PositiveIntegerField(default=100)
+    power = models.PositiveIntegerField(default=10)
+    armor = models.PositiveIntegerField(default=0)
+    gold_reward = models.PositiveIntegerField(default=0)
+    xp_reward = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+    
