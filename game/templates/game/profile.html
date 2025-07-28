@@ -32,25 +32,37 @@
           </div>
 
           <!-- Stats -->
-          <h5>Stats</h5>
-          <ul class="list-group mb-3">
+          <h4 class="mt-4"><i class="bi bi-person-lines-fill"></i> Core Stats</h4>
+          <ul class="list-group">
+            <li class="list-group-item">💪 <strong>Strength:</strong> {{ character.strength }}</li>
+            <li class="list-group-item">🧠 <strong>Intelligence:</strong> {{ character.intelligence }}</li>
+            <li class="list-group-item">🤸 <strong>Dexterity:</strong> {{ character.dexterity }}</li>
+            <li class="list-group-item">❤️ <strong>Vitality:</strong> {{ character.vitality }}</li>
+            <li class="list-group-item">🍀 <strong>Luck:</strong> {{ character.luck }}</li>            
+          </ul>       
+          <h4 class="mt-4"><i class="bi bi-bar-chart"></i> Battle Stats</h4>
+          <ul class="list-group">
             <li class="list-group-item">
-              Strength: {{ character.total_strength }}
-              <span class="text-muted">(base: {{ character.strength }})</span>
+              💚 <strong>HP:</strong> {{ character.hp }} / {{ character.max_hp }}
             </li>
             <li class="list-group-item">
-              Intelligence: {{ character.total_intelligence }}
-              <span class="text-muted">(base: {{ character.intelligence }})</span>
+              🔵 <strong>Mana:</strong> {{ character.mana }} / {{ character.max_mana }}
             </li>
             <li class="list-group-item">
-              Dexterity: {{ character.total_dexterity }}
-              <span class="text-muted">(base: {{ character.dexterity }})</span>
+              🟡 <strong>Stamina:</strong> {{ character.stamina }} / {{ character.max_stamina }}
             </li>
             <li class="list-group-item">
-              Luck: {{ character.total_luck }}
-              <span class="text-muted">(base: {{ character.luck }})</span>
+              🛡️ <strong>Armor:</strong> {{ character.armor }} 
+              ({{ character.damage_reduction|floatformat:1 }}% damage reduction)
+            </li>
+            <li class="list-group-item">
+              ⚔️ <strong>Physical Damage:</strong> {{ character.physical_min_damage }} – {{ character.physical_max_damage }}
+            </li>
+            <li class="list-group-item">
+              🪄 <strong>Spell Power:</strong> {{ character.spell_power }}
             </li>
           </ul>
+
 
           <!-- Gold -->
           <p><strong>Gold:</strong> <i class="bi bi-coin"></i> {{ character.gold }}</p>
