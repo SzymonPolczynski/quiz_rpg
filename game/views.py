@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from game.services.leveling import check_level_up
+from game.services.stats import recalculate_character_stats
 
 
 def register_view(request):
@@ -177,6 +178,7 @@ def allocate_stats_view(request):
                 character.vitality = new_values["vitality"]
                 character.luck = new_values["luck"]
                 character.stat_points -= total_used
+                recalculate_character_stats(character)
                 character.save()
                 return redirect("profile")
     else:
@@ -247,6 +249,7 @@ def equip_item_view(request, item_id):
 
     setattr(character, f"equipped_{slot}", item)
     character.items.remove(item)
+    recalculate_character_stats(character)
     character.save()
 
     return redirect("profile")
@@ -261,6 +264,7 @@ def unequip_item_view(request, slot):
         if equipeed_item:
             character.items.add(equipeed_item)
             setattr(character, f"equipped_{slot}", None)
+            recalculate_character_stats(character)
             character.save()
     except AttributeError:
         pass  # Handle case where slot does not exist
@@ -401,6 +405,8 @@ def claim_quest_reward_view(request, progress_id):
         progress.save()
         character.save()
 
+        check_level_up(character)
+
         messages.success(
             request,
             f"Reward claimed: +{progress.quest.experience_reward} XP, +{progress.quest.gold_reward} gold{item_info}.",
@@ -421,11 +427,13 @@ def create_character_view(request):
         class_choice = request.POST.get("class")
 
         if name and class_choice:
-            Character.objects.create(
+            character = Character.objects.create(
                 user=request.user,
                 name=name,
                 character_class=class_choice,
             )
+            recalculate_character_stats(character)
+            character.save()
             return redirect("home")
 
     return render(request, "game/create_character.html")

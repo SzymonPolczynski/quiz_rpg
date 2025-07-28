@@ -1,13 +1,18 @@
+BASE_HP = 100
+BASE_MANA = 50
+BASE_STAMINA = 50
+
+
 def calculate_max_hp(vitality, hp_from_levels):
-    return hp_from_levels + vitality * 10
+    return BASE_HP + hp_from_levels + vitality * 10
 
 
 def calculate_max_mana(intelligence, mana_from_levels):
-    return mana_from_levels + intelligence * 8
+    return BASE_MANA + mana_from_levels + intelligence * 8
 
 
 def calculate_max_stamina(dexterity, vitality):
-    return 50 + dexterity * 4 + vitality * 2
+    return BASE_STAMINA + dexterity * 4 + vitality * 2
 
 
 def calculate_physical_damage(strength, min_weapon_dmg, max_weapon_dmg):

@@ -31,4 +31,6 @@ def level_up(character):
     elif character.character_class == "rogue":
         character.hp_from_levels += random.randint(1, 10)  # 1k10
 
+    recalculate_character_stats(character)
     character.save()
+    
