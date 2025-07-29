@@ -10,6 +10,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from game.services.leveling import check_level_up
 from game.services.stats import recalculate_character_stats
+from game.services.regeneration import regenerate_character
 
 
 def register_view(request):
@@ -26,6 +27,8 @@ def register_view(request):
 
 @character_required
 def home_view(request):
+    character = request.user.character
+    regenerate_character(character)
     return render(request, "game/home.html")
 
 
@@ -50,6 +53,8 @@ def quiz_view(request):
         user=request.user,
         defaults={"name": request.user.username},
     )
+
+    regenerate_character(character)
 
     category_id = request.session.get("selected_category")
     questions = Question.objects.all()
@@ -126,6 +131,7 @@ def profile_view(request):
     ]
 
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     xp_max = character.level * 100
     xp_progress = int((character.experience / xp_max) * 100)
     equipped_items = []
@@ -153,6 +159,7 @@ def profile_view(request):
 @character_required
 def allocate_stats_view(request):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
 
     if request.method == "POST":
         form = StatAllocationForm(request.POST)
@@ -205,6 +212,7 @@ def allocate_stats_view(request):
 @character_required
 def inventory_view(request):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     items = character.items.all()
 
     return render(
@@ -220,6 +228,7 @@ def inventory_view(request):
 @login_required
 def use_item_view(request, item_id):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     item = Item.objects.get(id=item_id)
 
     character.strength += item.effect_strength
@@ -236,6 +245,7 @@ def use_item_view(request, item_id):
 @login_required
 def equip_item_view(request, item_id):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     item = Item.objects.get(id=item_id)
 
     # Check if the item can be equipped
@@ -258,6 +268,7 @@ def equip_item_view(request, item_id):
 @login_required
 def unequip_item_view(request, slot):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
 
     try:
         equipeed_item = getattr(character, f"equipped_{slot}")
@@ -293,6 +304,7 @@ def clear_category_view(request):
 @character_required
 def shop_view(request):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     items = Item.objects.filter(is_available_in_shop=True)
 
     return render(
@@ -308,6 +320,7 @@ def shop_view(request):
 @login_required
 def buy_item_view(request, item_id):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     item = get_object_or_404(Item, id=item_id)
 
     if item.price and character.gold >= item.price:
@@ -324,6 +337,7 @@ def buy_item_view(request, item_id):
 @login_required
 def sell_item_view(request, item_id):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     item = get_object_or_404(Item, id=item_id)
 
     if item in character.items.all():
@@ -341,6 +355,7 @@ def sell_item_view(request, item_id):
 @character_required
 def quest_list_view(request):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     accepted_ids = QuestProgress.objects.filter(character=character).values_list(
         "quest_id", flat=True
     )
@@ -352,6 +367,7 @@ def quest_list_view(request):
 @login_required
 def accept_quest_view(request, quest_id):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     quest = get_object_or_404(Quest, id=quest_id)
 
     QuestProgress.objects.get_or_create(character=character, quest=quest)
@@ -364,6 +380,7 @@ def accept_quest_view(request, quest_id):
 @character_required
 def quest_log_view(request):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     active_quests = QuestProgress.objects.filter(
         character=character, is_completed=False
     )
@@ -388,6 +405,7 @@ def quest_log_view(request):
 @login_required
 def claim_quest_reward_view(request, progress_id):
     character = Character.objects.get(user=request.user)
+    regenerate_character(character)
     progress = get_object_or_404(QuestProgress, id=progress_id, character=character)
 
     if progress.is_completed and not progress.reward_claimed:
@@ -442,6 +460,7 @@ def create_character_view(request):
 @character_required
 def battle_view(request):
     character = request.user.character
+    regenerate_character(character)
 
     enemy_id = request.session.get("current_enemy_id")
 
@@ -504,3 +523,24 @@ def battle_view(request):
 @character_required
 def battle_defeat_view(request):
     return render(request, "game/battle_defeat.html")
+
+
+@character_required
+def tavern_view(request):
+    character = request.user.character
+    regenerate_character(character)
+
+    if request.method == "POST":
+        if character.gold >= 20:
+            character.gold -= 20
+            character.hp = character.max_hp
+            character.mana = character.max_mana
+            character.stamina = character.max_stamina
+            character.save()
+            messages.success(request, "You feel rested and fully recovered!")
+        else:
+            messages.error(request, "Not enought gold to rest!")
+
+        return redirect("tavern")
+    
+    return render(request, "game/tavern.html", {"character": character})

@@ -40,4 +40,5 @@ urlpatterns = [
     path("create_character/", views.create_character_view, name="create_character"),
     path("battle/", views.battle_view, name="battle"),
     path("battle/defeat/", views.battle_defeat_view, name="battle_defeat"),
+    path("tavern/", views.tavern_view, name="tavern"),
 ]

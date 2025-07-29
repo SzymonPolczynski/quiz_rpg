@@ -1,0 +1,11 @@
+{% extends "game/base.html" %}
+
+{% block content %}
+  <h2 class="text-center mt-4">🍺 Tavern</h2>
+  <p>Rest to fully restore HP, mana and stamina for 20 gold.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-warning">Rest (20 gold)</button>
+  </form>
+{% endblock %}

@@ -102,6 +102,8 @@ class Character(models.Model):
 
     gold = models.IntegerField(default=0)
 
+    last_regen_time = models.DateTimeField(default=timezone.now)
+
     class XpReward(TypedDict):
         total: int
         base: int
