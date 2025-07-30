@@ -14,6 +14,8 @@ def regenerate_character(character):
     if ticks >= 1:
         character.hp = min(character.max_hp, character.hp + ticks * REGEN_AMOUNT)
         character.mana = min(character.max_mana, character.mana + ticks * REGEN_AMOUNT)
-        character.stamina = min(character.max_stamina, character.stamina + ticks * REGEN_AMOUNT)
+        character.stamina = min(
+            character.max_stamina, character.stamina + ticks * REGEN_AMOUNT
+        )
         character.last_regen_time = now
         character.save()

@@ -1,6 +1,15 @@
 import random
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Character, Question, Answer, Item, Category, Quest, QuestProgress, Enemy
+from .models import (
+    Character,
+    Question,
+    Answer,
+    Item,
+    Category,
+    Quest,
+    QuestProgress,
+    Enemy,
+)
 from django.contrib.auth.decorators import login_required
 from .decorators import character_required
 from .forms import CharasterClassForm, StatAllocationForm
@@ -480,7 +489,9 @@ def battle_view(request):
     enemy_hp = request.session.get("enemy_hp", enemy.max_hp)
 
     if request.method == "POST":
-        dmg = random.randint(character.physical_min_damage, character.physical_max_damage)
+        dmg = random.randint(
+            character.physical_min_damage, character.physical_max_damage
+        )
         dmg_after_armor = max(dmg - enemy.armor, 0)
         enemy_hp -= dmg_after_armor
 
@@ -492,12 +503,15 @@ def battle_view(request):
             request.session.pop("current_enemy_id", None)
             request.session.pop("enemy_hp", None)
 
-            messages.success(request, f"You defeated {enemy.name} and earned {enemy.gold_reward} gold and {enemy.xp_reward} XP!")
+            messages.success(
+                request,
+                f"You defeated {enemy.name} and earned {enemy.gold_reward} gold and {enemy.xp_reward} XP!",
+            )
             check_level_up(character)
             character.save()
 
             return redirect("battle")
-        
+
         enemy_dmg = max(enemy.power - character.armor, 0)
         character.hp = max(character.hp - enemy_dmg, 0)
 
@@ -511,13 +525,20 @@ def battle_view(request):
 
         character.save()
 
-        messages.info(request, f"You hit {enemy.name} for {dmg_after_armor} dmg. Enemy hit you for {enemy_dmg} dmg.")
+        messages.info(
+            request,
+            f"You hit {enemy.name} for {dmg_after_armor} dmg. Enemy hit you for {enemy_dmg} dmg.",
+        )
 
-    return render(request, "game/battle.html", {
-        "enemy": enemy,
-        "enemy_hp": enemy_hp,
-        "character": character,
-    })
+    return render(
+        request,
+        "game/battle.html",
+        {
+            "enemy": enemy,
+            "enemy_hp": enemy_hp,
+            "character": character,
+        },
+    )
 
 
 @character_required
@@ -542,5 +563,5 @@ def tavern_view(request):
             messages.error(request, "Not enought gold to rest!")
 
         return redirect("tavern")
-    
+
     return render(request, "game/tavern.html", {"character": character})

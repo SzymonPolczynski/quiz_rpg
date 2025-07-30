@@ -1,5 +1,14 @@
 from django.contrib import admin
-from .models import Character, Question, Answer, Item, Category, Quest, QuestProgress, Enemy
+from .models import (
+    Character,
+    Question,
+    Answer,
+    Item,
+    Category,
+    Quest,
+    QuestProgress,
+    Enemy,
+)
 
 
 class AnswerInline(admin.TabularInline):

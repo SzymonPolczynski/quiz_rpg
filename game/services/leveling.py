@@ -33,4 +33,3 @@ def level_up(character):
 
     recalculate_character_stats(character)
     character.save()
-    
