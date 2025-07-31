@@ -32,4 +32,9 @@ def level_up(character):
         character.hp_from_levels += random.randint(1, 10)  # 1k10
 
     recalculate_character_stats(character)
+
+    character.hp = character.max_hp
+    character.mana = character.max_mana
+    character.stamina = character.max_stamina
+
     character.save()
