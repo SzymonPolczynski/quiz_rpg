@@ -111,9 +111,9 @@ def quiz_view(request):
                             >= progress.quest.required_correct_answers
                         ):
                             progress.is_completed = True
-                        messages.success(
-                            request, f"Quest completed: {progress.quest.name}!"
-                        )
+                            messages.success(
+                                request, f"Quest completed: {progress.quest.name}!"
+                            )
                         progress.save()
                 character.save()
             else:
