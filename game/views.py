@@ -506,6 +506,8 @@ def battle_view(request):
         request.session["enemy_hp"] = enemy.max_hp
 
     enemy_hp = request.session.get("enemy_hp", enemy.max_hp)
+    enemy_percent_hp = int(enemy_hp / enemy.max_hp * 100)
+    character_percent_hp = int(character.hp / character.max_hp * 100)
 
     if request.method == "POST":
         result = resolve_battle_turn(character, enemy, enemy_hp)
@@ -545,6 +547,8 @@ def battle_view(request):
             "enemy": enemy,
             "enemy_hp": enemy_hp,
             "character": character,
+            "enemy_percent_hp": enemy_percent_hp,
+            "character_percent_hp": character_percent_hp,
         },
     )
 
@@ -573,3 +577,11 @@ def tavern_view(request):
         return redirect("tavern")
 
     return render(request, "game/tavern.html", {"character": character})
+
+
+@character_required
+def battle_escape_view(request):
+    request.session.pop("current_enemy_id", None)
+    request.session.pop("enemy_hp", None)
+    messages.info(request, "You ran away from the battle.")
+    return redirect("home")

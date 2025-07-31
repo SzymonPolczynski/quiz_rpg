@@ -2,15 +2,36 @@
 {% block title %}Battle{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-  <h2>⚔️ {{ enemy.name }}</h2>
-  <p>HP: {{ enemy_hp }} / {{ enemy.max_hp }}</p>
 
-  <p><strong>Your HP:</strong> {{ character.hp }} / {{ character.max_hp }}</p>
+<div class="container my-4">
+  <h4>{{ enemy.name }}</h4>
+  <div class="progress mb-2" style="height: 25px;">
+    <div
+      class="progress-bar bg-danger"
+      role="progressbar"
+      style="width: {{ enemy_percent_hp }}%;"
+    >
+      {{ enemy_hp }} / {{ enemy.max_hp }}
+    </div>
+  </div>
+
+  <h4>You</h4>
+  <div class="progress mb-4" style="height: 25px;">
+    <div
+      class="progress-bar bg-success"
+      role="progressbar"
+      style="width: {{ character_percent_hp }}%;"
+    >
+      {{ character.hp }} / {{ character.max_hp }}
+    </div>
+  </div>
 
   <form method="post">
     {% csrf_token %}
     <button class="btn btn-danger">Attack</button>
   </form>
 </div>
+
+<a href="{% url 'battle_escape' %}" class="btn btn-secondary">Run Away</a>
+
 {% endblock %}
