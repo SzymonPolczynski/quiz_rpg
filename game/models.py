@@ -307,7 +307,15 @@ class QuestProgress(models.Model):
 class Enemy(models.Model):
     """Model representing the enemy in PvE encounters."""
 
+    DIFFICULTY_CHOICES = [
+    ("easy", "Easy"),
+    ("medium", "Medium"),
+    ("hard", "Hard"),
+    ("boss", "Boss"),
+    ]
+
     name = models.CharField(max_length=100)
+    difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default="easy")
     max_hp = models.PositiveIntegerField(default=100)
     power = models.PositiveIntegerField(default=10)
     armor = models.PositiveIntegerField(default=0)

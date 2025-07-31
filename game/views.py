@@ -20,6 +20,7 @@ from django.contrib.auth import login
 from game.services.leveling import check_level_up
 from game.services.stats import recalculate_character_stats
 from game.services.regeneration import regenerate_character
+from game.services.battle_engine import resolve_battle_turn
 
 
 def register_view(request):
@@ -467,6 +468,24 @@ def create_character_view(request):
 
 
 @character_required
+def battle_select_view(request):
+    if request.method == "POST":
+        difficulty = request.POST.get("difficulty")
+        enemies = Enemy.objects.filter(difficulty=difficulty)
+        
+        if not enemies.exists():
+            messages.error(request, "No enemies found for selected difficulty!")
+            return redirect("battle_select")
+        
+        enemy = random.choice(enemies)
+        request.session["current_enemy_id"] = enemy.pk
+        request.session["enemy_hp"] = enemy.max_hp
+        return redirect("battle")
+    
+    return render(request, "game/battle_select.html")
+
+
+@character_required
 def battle_view(request):
     character = request.user.character
     regenerate_character(character)
@@ -489,46 +508,35 @@ def battle_view(request):
     enemy_hp = request.session.get("enemy_hp", enemy.max_hp)
 
     if request.method == "POST":
-        dmg = random.randint(
-            character.physical_min_damage, character.physical_max_damage
-        )
-        dmg_after_armor = max(dmg - enemy.armor, 0)
-        enemy_hp -= dmg_after_armor
-
+        result = resolve_battle_turn(character, enemy, enemy_hp)
+        enemy_hp = result["enemy_hp"]
         request.session["enemy_hp"] = enemy_hp
 
-        if enemy_hp <= 0:
+        if result["enemy_defeated"]:
             character.experience += enemy.xp_reward
             character.gold += enemy.gold_reward
             request.session.pop("current_enemy_id", None)
             request.session.pop("enemy_hp", None)
-
             messages.success(
                 request,
                 f"You defeated {enemy.name} and earned {enemy.gold_reward} gold and {enemy.xp_reward} XP!",
             )
             check_level_up(character)
             character.save()
-
             return redirect("battle")
 
-        enemy_dmg = max(enemy.power - character.armor, 0)
-        character.hp = max(character.hp - enemy_dmg, 0)
-
-        if character.hp <= 0:
+        if result["character_defeated"]:
             request.session.pop("current_enemy_id", None)
             request.session.pop("enemy_hp", None)
-
             messages.error(request, f"You were defeated by {enemy.name}!")
             character.save()
             return redirect("battle_defeat")
 
+        for log in result["logs"]:
+            messages.info(request, log)
+
         character.save()
 
-        messages.info(
-            request,
-            f"You hit {enemy.name} for {dmg_after_armor} dmg. Enemy hit you for {enemy_dmg} dmg.",
-        )
 
     return render(
         request,

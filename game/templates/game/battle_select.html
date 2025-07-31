@@ -1,0 +1,16 @@
+{% extends "game/base.html" %}
+{% block content %}
+  <div class="container mt-4">
+    <h2>Select enemy difficulty</h2>
+    <form method="post">
+      {% csrf_token %}
+      <select class="form-select" name="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+        <option value"boss">Boss</option>
+      </select>
+      <button class="btn btn-danger mt-2" type="submit">Fight!</button>
+    </form>
+  </div>
+{% endblock %}
