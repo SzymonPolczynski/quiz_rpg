@@ -17,46 +17,48 @@
 
   <body>
     <header class="bg-dark text-white">
-      <nav class="navbar navbar-expand-lg navbar-dark container">
-        <a class="navbar-brand" href="{% url 'home' %}">
-          <i class="bi bi-stars"></i> Quiz RPG
-        </a>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid px-4">
+          <div class="d-flex justify-content-between align-items-center w-100">
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+            <div class="d-flex align-items-center">
+              <a class="navbar-brand me-4" href="{% url 'home' %}">
+                <i class="bi bi-stars"></i> Quiz RPG
+              </a>
+              <ul class="navbar-nav flex-row gap-2">
+                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'home' %}"><i class="bi bi-house-door"></i> Home</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'profile' %}"><i class="bi bi-person"></i> Profile</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'inventory' %}"><i class="bi bi-locker"></i> Inventory</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'shop' %}"><i class="bi bi-cart"></i> Shop</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'quest_log' %}"><i class="bi bi-journal-check"></i> Quest Log</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'quest_list' %}"><i class="bi bi-list-columns"></i> Quest Board</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'battle_select' %}"><i class="bi bi-crosshair"></i> PvE</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'tavern' %}"><i class="bi bi-cup-straw"></i> Tavern</a></li>
+              </ul>
+            </div>
 
-        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="bi bi-house-door"></i> Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person"></i> Profile</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'inventory' %}"><i class="bi bi-locker"></i> Inventory</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'shop' %}"><i class="bi bi-cart"></i> Shop</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'quest_log' %}"><i class="bi bi-journal-check"></i> Quest Log</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'quest_list' %}"><i class="bi bi-list-columns"></i> Quest Board</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'battle_select' %}"><i class="bi bi-crosshair"></i> PvE</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'tavern' %}"><i class="bi bi-cup-straw"></i> Tavern</a></li>
-          </ul>
-
-          <div class="d-flex align-items-center gap-3 text-nowrap">
-            {% if user.is_authenticated %}
-              {% if character %}
-                <span class="text-light"><i class="bi bi-person-circle"></i> {{ character.name }} (Lv {{ character.level }})</span>
-                <span class="text-warning"><i class="bi bi-lightning-fill"></i> {{ character.experience }} / {{ character.level|add:"0" }}00 XP</span>
-                <span class="text-warning"><i class="bi bi-coin"></i> {{ character.gold }}</span>
+            <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end text-nowrap">
+              {% if user.is_authenticated %}
+                {% if character %}
+                  <span class="text-light"><i class="bi bi-person-circle"></i> {{ character.name }} (Lv {{ character.level }})</span>
+                  <span class="text-warning"><i class="bi bi-lightning-fill"></i> {{ character.experience }} / {{ character.level|add:"0" }}00 XP</span>
+                  <span class="text-warning"><i class="bi bi-coin"></i> {{ character.gold }}</span>
+                  <span class="text-danger"><i class="bi bi-heart-fill"></i> {{ character.hp }} / {{ character.max_hp }}</span>
+                  <span class="text-primary"><i class="bi bi-droplet-half"></i> {{ character.mana }} / {{ character.max_mana }}</span>
+                  <span class="text-success"><i class="bi bi-bolt-fill"></i> {{ character.stamina }} / {{ character.max_stamina }}</span>
+                {% else %}
+                  <span class="text-light"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
+                {% endif %}
+                <form method="post" action="{% url 'logout' %}" class="d-inline">{% csrf_token %}
+                  <button type="submit" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                  </button>
+                </form>
               {% else %}
-                <span class="text-light"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
+                <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-light btn-sm"><i class="bi bi-person-plus"></i> Register</a>
               {% endif %}
-              <form method="post" action="{% url 'logout' %}" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-light btn-sm">
-                  <i class="bi bi-box-arrow-right"></i> Logout
-                </button>
-              </form>
-            {% else %}
-              <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-in-right"></i> Login</a>
-              <a href="{% url 'register' %}" class="btn btn-outline-light btn-sm"><i class="bi bi-person-plus"></i> Register</a>
-            {% endif %}
+            </div>
           </div>
         </div>
       </nav>
