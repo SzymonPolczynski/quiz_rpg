@@ -18,67 +18,53 @@
   <body>
     <header class="bg-dark text-white">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid px-4">
-          <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="container-fluid d-flex justify-content-between align-items-center py-2">
 
-            <div class="d-flex align-items-center">
-              <a class="navbar-brand me-4" href="{% url 'home' %}">
-                <i class="bi bi-stars"></i> Quiz RPG
-              </a>
-              <ul class="navbar-nav flex-row gap-2">
-                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'home' %}"><i class="bi bi-house-door"></i> Home</a></li>
-                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'profile' %}"><i class="bi bi-person"></i> Profile</a></li>
-                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'inventory' %}"><i class="bi bi-locker"></i> Inventory</a></li>
-                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'shop' %}"><i class="bi bi-cart"></i> Shop</a></li>
-                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'quest_log' %}"><i class="bi bi-journal-check"></i> Quest Log</a></li>
-                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'quest_list' %}"><i class="bi bi-list-columns"></i> Quest Board</a></li>
-                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'battle_select' %}"><i class="bi bi-crosshair"></i> PvE</a></li>
-                <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'tavern' %}"><i class="bi bi-cup-straw"></i> Tavern</a></li>
-              </ul>
-            </div>
-
-            <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end text-nowrap">
-              {% if user.is_authenticated %}
-                {% if character %}
-                  <span class="text-light"><i class="bi bi-person-circle"></i> {{ character.name }} (Lv {{ character.level }})</span>
-                  <span class="text-warning"><i class="bi bi-lightning-fill"></i> {{ character.experience }} / {{ character.level|add:"0" }}00 XP</span>
-                  <span class="text-warning"><i class="bi bi-coin"></i> {{ character.gold }}</span>
-                  <span class="text-danger"><i class="bi bi-heart-fill"></i> {{ character.hp }} / {{ character.max_hp }}</span>
-                  <span class="text-primary"><i class="bi bi-droplet-half"></i> {{ character.mana }} / {{ character.max_mana }}</span>
-                  <span class="text-success"><i class="bi bi-bolt-fill"></i> {{ character.stamina }} / {{ character.max_stamina }}</span>
-                {% else %}
-                  <span class="text-light"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
-                {% endif %}
-                <form method="post" action="{% url 'logout' %}" class="d-inline">{% csrf_token %}
-                  <button type="submit" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-box-arrow-right"></i> Logout
-                  </button>
-                </form>
-              {% else %}
-                <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-in-right"></i> Login</a>
-                <a href="{% url 'register' %}" class="btn btn-outline-light btn-sm"><i class="bi bi-person-plus"></i> Register</a>
-              {% endif %}
-            </div>
+          <!-- LEFT: Navigation -->
+          <div class="d-flex align-items-center gap-3">
+            <a class="navbar-brand me-3" href="{% url 'home' %}">
+              <i class="bi bi-stars"></i> Quiz RPG
+            </a>
+            <ul class="navbar-nav flex-row gap-2">
+              <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'home' %}"><i class="bi bi-house-door"></i> Home</a></li>
+              <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'profile' %}"><i class="bi bi-person"></i> Profile</a></li>
+              <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'inventory' %}"><i class="bi bi-locker"></i> Inventory</a></li>
+              <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'shop' %}"><i class="bi bi-cart"></i> Shop</a></li>
+              <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'quest_log' %}"><i class="bi bi-journal-check"></i> Quest Log</a></li>
+              <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'quest_list' %}"><i class="bi bi-list-columns"></i> Quest Board</a></li>
+              <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'battle_select' %}"><i class="bi bi-crosshair"></i> PvE</a></li>
+              <li class="nav-item"><a class="nav-link btn btn-outline-secondary" href="{% url 'tavern' %}"><i class="bi bi-cup-hot"></i> Tavern</a></li>
+            </ul>
           </div>
+
+          <!-- RIGHT: Player stats and logout -->
+          <div class="d-flex align-items-center gap-3">
+            {% if character %}
+              <span class="text-white small">
+                <i class="bi bi-person-circle"></i> {{ character.name }} (Lv {{ character.level }})
+                <span class="text-warning ms-2">⚡ {{ character.stamina }}/{{ character.max_stamina }}</span>
+                <span class="text-danger ms-2">❤ {{ character.hp }}/{{ character.max_hp }}</span>
+                <span class="text-primary ms-2">💧 {{ character.mana }}/{{ character.max_mana }}</span>
+                <span class="text-success ms-2">🛡️ {{ character.armor }}</span>
+                <span class="text-warning ms-2">💰 {{ character.gold }}</span>
+                <span class="text-info ms-2">⭐ {{ character.experience }} XP</span>
+              </span>
+            {% endif %}
+            <a class="btn btn-outline-light btn-sm" href="{% url 'logout' %}">Logout</a>
+          </div>
+
         </div>
       </nav>
     </header>
 
-    {% if messages %}
-      <div class="container mt-3">
+    <main class="container mt-4">
+      {% if messages %}
         {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
         {% endfor %}
-      </div>
-    {% endif %}
+      {% endif %}
 
-    <main class="container mb-5">
-      {% block content %}
-      <!-- Page-specific content goes here -->
-      {% endblock %}
+      {% block content %}{% endblock %}
     </main>
 
     <!-- Bootstrap JS -->

@@ -6,15 +6,6 @@ body {
     padding: 0 20px;
 }
 
-header {
-    background-color: #222;
-    color: white;
-    padding: 15px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
 header h1 {
     color: white;
     font-weight: bold;
