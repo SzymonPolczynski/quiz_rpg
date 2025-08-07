@@ -17,7 +17,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-from game.services.leveling import check_level_up
+from game.services.leveling import check_level_up, experience_to_next_level
 from game.services.stats import recalculate_character_stats
 from game.services.regeneration import regenerate_character
 from game.services.battle_engine import resolve_battle_turn
@@ -585,3 +585,31 @@ def battle_escape_view(request):
     request.session.pop("enemy_hp", None)
     messages.info(request, "You ran away from the battle.")
     return redirect("home")
+
+
+@character_required
+def character_view(request):
+    character = request.user.character
+
+    equipped_ids = [
+        character.equipped_head_id,
+        character.equipped_body_id,
+        character.equipped_legs_id,
+        character.equipped_feet_id,
+        character.equipped_hand_right_id,
+        character.equipped_hand_left_id,        
+    ]
+
+    equipment_slots = ["head", "body", "legs", "feet", "hand_right", "hand_left"]
+    backpack_items = character.items.exclude(id__in=[eid for eid in equipped_ids if eid])
+
+    xp_needed = experience_to_next_level(character.level)
+    xp_progress = round((character.experience / xp_needed) * 100, 1) if xp_needed else 0
+
+    return render(request, "game/character.html", {
+        "character": character,
+        "equipment_slots": equipment_slots,
+        "backpack_items": backpack_items,
+        "xp_progress": xp_progress,
+        "xp_needed": xp_needed,
+    })

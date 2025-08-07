@@ -1,0 +1,98 @@
+{% extends "game/base.html" %}
+{% block title %}Character{% endblock %}
+{% load character_extras %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-person-lines-fill"></i> Character Overview</h2>
+
+<div class="row">
+  <!-- Left: Profile Info -->
+  <div class="col-md-6">
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <i class="bi bi-person-vcard"></i> {{ character.name }}'s Profile
+      </div>
+      <div class="card-body">
+        <p><strong>Class:</strong> {{ character.character_class|title }}</p>
+        <p><strong>Level:</strong> {{ character.level }}</p>
+        <p><strong>XP:</strong> {{ character.experience }} / {{ character.experience_to_next_level }}</p>
+
+        <p><strong>XP:</strong> {{ character.experience }} / {{ xp_needed }}</p>
+        <div class="progress mb-3" style="height: 25px;">
+        <div
+            class="progress-bar"
+            role="progressbar"
+            style="width: {{ xp_progress }}%;"
+            aria-valuenow="{{ xp_progress }}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+        >
+            {{ xp_progress }}%
+        </div>
+        </div>
+
+        <h5><i class="bi bi-person-gear"></i> Core Stats</h5>
+        <ul class="list-group mb-3">
+          <li class="list-group-item"><i class="bi bi-arm-flex"></i> Strength: {{ character.strength }}</li>
+          <li class="list-group-item"><i class="bi bi-brain"></i> Intelligence: {{ character.intelligence }}</li>
+          <li class="list-group-item"><i class="bi bi-crosshair"></i> Dexterity: {{ character.dexterity }}</li>
+          <li class="list-group-item"><i class="bi bi-heart-pulse"></i> Vitality: {{ character.vitality }}</li>
+          <li class="list-group-item"><i class="bi bi-stars"></i> Luck: {{ character.luck }}</li>
+        </ul>
+
+        <h5><i class="bi bi-bar-chart-line"></i> Battle Stats</h5>
+        <ul class="list-group mb-3">
+          <li class="list-group-item text-danger"><strong>❤ HP:</strong> {{ character.hp }} / {{ character.max_hp }}</li>
+          <li class="list-group-item text-primary"><strong>💧 Mana:</strong> {{ character.mana }} / {{ character.max_mana }}</li>
+          <li class="list-group-item text-warning"><strong>⚡ Stamina:</strong> {{ character.stamina }} / {{ character.max_stamina }}</li>
+          <li class="list-group-item text-info"><strong>🛡️ Armor:</strong> {{ character.armor }} ({{ character.damage_reduction|floatformat:1 }}% damage reduction)</li>
+          <li class="list-group-item"><strong>🗡️ Physical Damage:</strong> {{ character.physical_min_damage }} – {{ character.physical_max_damage }}</li>
+          <li class="list-group-item"><strong>✨ Spell Power:</strong> {{ character.spell_power }}</li>
+          <li class="list-group-item"><strong>💰 Gold:</strong> {{ character.gold }}</li>
+        </ul>
+
+        <h5><i class="bi bi-shield-shaded"></i> Equipped Gear</h5>
+        <ul class="list-group">
+          {% for slot in equipment_slots %}
+            {% with item=character|get_slot:slot %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ slot|capfirst }}: {{ item.name|default:"None" }}</span>
+                {% if item %}
+                  <form method="post" action="{% url 'unequip_item' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Unequip</button>
+                  </form>
+                {% endif %}
+              </li>
+            {% endwith %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Backpack -->
+  <div class="col-md-6">
+    <div class="card mb-4">
+      <div class="card-header bg-secondary text-white"><i class="bi bi-backpack2"></i> Backpack</div>
+      <div class="card-body">
+        {% if backpack_items %}
+          <ul class="list-group">
+            {% for item in backpack_items %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ item.name }}
+                <form method="post" action="{% url 'equip_item' item.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-success">Equip</button>
+                </form>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No unequipped items.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
