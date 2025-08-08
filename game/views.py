@@ -23,6 +23,9 @@ from game.services.regeneration import regenerate_character
 from game.services.battle_engine import resolve_battle_turn
 
 
+VALID_SLOTS = {"head", "body", "legs", "feet", "hand_right", "hand_left"}
+
+
 def register_view(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
@@ -255,42 +258,59 @@ def use_item_view(request, item_id):
 @login_required
 def equip_item_view(request, item_id):
     character = Character.objects.get(user=request.user)
-    regenerate_character(character)
-    item = Item.objects.get(id=item_id)
+    item = get_object_or_404(Item, id=item_id)
 
-    # Check if the item can be equipped
+    # Checking if item is in character backpack
+    if item not in character.items.all():
+        messages.error(request, "This item is not in your backpack.")
+        return redirect("character")
+
+    # Checking slot
     slot = item.slot
-    current_equipped = getattr(character, f"equipped_{slot}")
+    if slot not in VALID_SLOTS:
+        messages.error(request, "This item cannot be equipped.")
+        return redirect("character")
 
-    # If there's already an item equipped in that slot, add it back to the inventory
-    # before equipping the new item
-    if current_equipped:
-        character.items.add(current_equipped)
+    # If slot is taken, unequip item and move it to backpack
+    currently_equipped = getattr(character, f"equipped_{slot}", None)
+    if currently_equipped:
+        character.items.add(currently_equipped)
 
     setattr(character, f"equipped_{slot}", item)
+
     character.items.remove(item)
+
     recalculate_character_stats(character)
     character.save()
 
-    return redirect("profile")
+    messages.success(request, f"Equipped {item.name} on {slot.replace('_', ' ').title()}.")
+    return redirect("character")
 
 
 @login_required
 def unequip_item_view(request, slot):
     character = Character.objects.get(user=request.user)
-    regenerate_character(character)
 
-    try:
-        equipeed_item = getattr(character, f"equipped_{slot}")
-        if equipeed_item:
-            character.items.add(equipeed_item)
-            setattr(character, f"equipped_{slot}", None)
-            recalculate_character_stats(character)
-            character.save()
-    except AttributeError:
-        pass  # Handle case where slot does not exist
+    valid_slots = {"head", "body", "legs", "feet", "hand_right", "hand_left"}
+    if slot not in valid_slots:
+        messages.error(request, "Invalid equipment slot.")
+        return redirect("character")
 
-    return redirect("profile")
+    # Check for item in slot
+    item = getattr(character, f"equipped_{slot}", None)
+    if not item:
+        messages.warning(request, "No item equipped in this slot.")
+        return redirect("character")
+
+    # Unequip, move to inventory and clear slot
+    character.items.add(item)
+    setattr(character, f"equipped_{slot}", None)
+
+    recalculate_character_stats(character)
+    character.save()
+
+    messages.success(request, f"Unequipped {item.name} from {slot.replace('_', ' ').title()}.")
+    return redirect("character")
 
 
 @login_required
